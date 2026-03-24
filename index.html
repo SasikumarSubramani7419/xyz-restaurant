@@ -1,166 +1,178 @@
-<!-- ONLY SCRIPT CHANGED — YOUR FULL UI SAME -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XYZ Restaurant</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+body{background:#0f0e0c;color:#f0ebe0;font-family:'DM Sans';display:flex;justify-content:center;padding:20px}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:#1a1814;padding:25px;border-radius:12px;width:420px}
+.menu-item{background:#221f1a;padding:12px;border-radius:10px;margin-bottom:8px;cursor:pointer}
+.btn{background:#d4a847;color:#000;padding:12px;border:none;border-radius:10px;width:100%;margin-top:10px}
+.qty-btn{padding:10px}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- welcome -->
+<div class="screen active" id="screen-welcome">
+<div class="card">
+<h1>XYZ Restaurant</h1>
+<button class="btn" onclick="goTo('screen-menu')">Start</button>
+</div>
+</div>
+
+<!-- category -->
+<div class="screen" id="screen-menu">
+<div class="card">
+<h2>Select Category</h2>
+<button class="btn" onclick="selectCategory('veg')">Veg</button>
+<button class="btn" onclick="selectCategory('nonveg')">Non Veg</button>
+</div>
+</div>
+
+<!-- items -->
+<div class="screen" id="screen-items">
+<div class="card">
+<h2>Items</h2>
+<input id="search-input" oninput="filterItems()" placeholder="search">
+<div id="items-grid"></div>
+<button class="btn" onclick="goTo('screen-menu')">Back</button>
+</div>
+</div>
+
+<!-- qty -->
+<div class="screen" id="screen-qty">
+<div class="card">
+<h2 id="prep-name"></h2>
+<button onclick="changeQty(-1)">-</button>
+<span id="qty-display">1</span>
+<button onclick="changeQty(1)">+</button>
+<button class="btn" onclick="addToCart()">Add To Cart</button>
+</div>
+</div>
+
+<!-- payment -->
+<div class="screen" id="screen-payment">
+<div class="card">
+<h2>Payment</h2>
+<p id="pay-item"></p>
+<p>Total ₹ <span id="pay-total"></span></p>
+<input id="input-name" placeholder="name">
+<input id="input-card" placeholder="card">
+<input id="input-pin" placeholder="pin">
+<button class="btn" onclick="processPayment()">Pay</button>
+</div>
+</div>
+
+<div class="screen" id="screen-success">
+<div class="card"><h2>Success</h2></div>
+</div>
+
+<div class="screen" id="screen-fail">
+<div class="card"><h2>Failed</h2></div>
+</div>
+
+</div>
 
 <script>
-
-const MENU = {
-  veg:[
-    {name:'Idli',emoji:'🫓',price:20, tag:'all',desc:'Soft steamed rice cakes',discount:0},
-    {name:'Dosa',emoji:'🥞',price:20, tag:'all',desc:'Crispy rice & lentil crepe',discount:0},
-    {name:'Vada',emoji:'🍩',price:25, tag:'snacks',desc:'Crunchy lentil doughnuts',discount:10},
-    {name:'Paneer Butter Masala',emoji:'🧀',price:120, tag:'main',desc:'Creamy tomato paneer curry',discount:0},
-    {name:'Chapati',emoji:'🫓',price:15, tag:'main',desc:'Soft whole wheat flatbread',discount:10},
-    {name:'Fried Rice',emoji:'🍚',price:80, tag:'rice',desc:'Veg fried rice',discount:0},
-  ],
-  nonveg:[
-    {name:'Chicken Biryani',emoji:'🍛',price:120, tag:'biryani',desc:'Chicken biryani',discount:20},
-    {name:'Mutton Biryani',emoji:'🥘',price:200, tag:'biryani',desc:'Mutton biryani',discount:20},
-    {name:'Fish Curry',emoji:'🐟',price:150, tag:'curry',desc:'Fish curry',discount:15},
-    {name:'Egg Fried Rice',emoji:'🍳',price:90, tag:'rice',desc:'Egg rice',discount:0},
-    {name:'Chicken Curry',emoji:'🍲',price:140, tag:'curry',desc:'Chicken curry',discount:0},
-    {name:'Chicken Fried Rice',emoji:'🍗',price:110, tag:'rice',desc:'Chicken rice',discount:0},
-  ],
+const MENU={
+veg:[
+{name:'Idli',price:20,discount:0},
+{name:'Vada',price:25,discount:10},
+{name:'Chapati',price:15,discount:10}
+],
+nonveg:[
+{name:'Chicken Biryani',price:120,discount:20},
+{name:'Fish Curry',price:150,discount:15}
+]
 };
 
-const TAGS={veg:['all','snacks','main','rice'],nonveg:['all','biryani','curry','rice']};
-
-const state={
-  category:'',
-  cart:[],
-  currentItem:null,
-  qty:1,
-  finalTotal:0,
-  activeTag:'all'
-};
+const state={category:'',cart:[],currentItem:null,qty:1,finalTotal:0};
 
 function goTo(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
 }
-
-function handlePress5(){ goTo('screen-menu'); }
 
 function selectCategory(cat){
-  state.category=cat;
-  state.activeTag='all';
-  buildFilterTabs(cat);
-  renderItems(MENU[cat]);
-  goTo('screen-items');
-}
-
-function buildFilterTabs(cat){
-  const wrap=document.getElementById('filter-tabs');
-  wrap.innerHTML='';
-  TAGS[cat].forEach(tag=>{
-    const btn=document.createElement('button');
-    btn.className='filter-tab'+(tag==='all'?' active':'');
-    btn.textContent=tag;
-    btn.onclick=()=>{
-      state.activeTag=tag;
-      filterItems();
-    };
-    wrap.appendChild(btn);
-  });
-}
-
-function filterItems(){
-  const q=document.getElementById('search-input').value.toLowerCase();
-  const items=MENU[state.category].filter(i=>{
-    return (state.activeTag==='all'||i.tag===state.activeTag)
-    && (i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q));
-  });
-  renderItems(items);
+state.category=cat;
+renderItems(MENU[cat]);
+goTo('screen-items');
 }
 
 function renderItems(items){
-  const grid=document.getElementById('items-grid');
-  grid.innerHTML='';
-  items.forEach(item=>{
-    const el=document.createElement('div');
-    el.className='menu-item';
-    el.innerHTML=`
-      <div class="item-left">
-        <span class="item-emoji">${item.emoji}</span>
-        <div>
-          <div class="item-name">${item.name}</div>
-          <div class="item-desc">${item.desc}</div>
-          ${item.discount>0?`<span class="offer-tag">🔥 ${item.discount}% OFF</span>`:''}
-        </div>
-      </div>
-      <span class="item-price">₹${item.price}</span>`;
-    el.onclick=()=>selectItem(item);
-    grid.appendChild(el);
-  });
+const grid=document.getElementById('items-grid');
+grid.innerHTML='';
+items.forEach(item=>{
+let d=document.createElement('div');
+d.className='menu-item';
+d.innerText=item.name+" ₹"+item.price;
+d.onclick=()=>selectItem(item);
+grid.appendChild(d);
+});
+}
+
+function filterItems(){
+let q=document.getElementById('search-input').value.toLowerCase();
+renderItems(MENU[state.category].filter(i=>i.name.toLowerCase().includes(q)));
 }
 
 function selectItem(item){
-  state.currentItem=item;
-  state.qty=1;
-  document.getElementById('prep-emoji').textContent=item.emoji;
-  document.getElementById('prep-name').textContent=item.name;
-  goTo('screen-qty');
-  updateQtyUI();
+state.currentItem=item;
+state.qty=1;
+document.getElementById('prep-name').innerText=item.name;
+document.getElementById('qty-display').innerText=1;
+goTo('screen-qty');
 }
 
 function changeQty(d){
-  state.qty=Math.max(1,state.qty+d);
-  updateQtyUI();
-}
-
-function updateQtyUI(){
-  document.getElementById('qty-display').textContent=state.qty;
+state.qty=Math.max(1,state.qty+d);
+document.getElementById('qty-display').innerText=state.qty;
 }
 
 function addToCart(){
-  const item=state.currentItem;
-  const exist=state.cart.find(i=>i.name===item.name);
-  if(exist) exist.qty+=state.qty;
-  else state.cart.push({...item,qty:state.qty});
-  goTo('screen-items');
+let item=state.currentItem;
+let exist=state.cart.find(i=>i.name===item.name);
+if(exist) exist.qty+=state.qty;
+else state.cart.push({...item,qty:state.qty});
+goTo('screen-items');
 }
 
-function calculateCartTotal(){
-  let total=0;
-  state.cart.forEach(i=>{
-    let sub=i.price*i.qty;
-    let disc=sub*i.discount/100;
-    total+=sub-disc;
-  });
-  state.finalTotal=Math.round(total);
+function calcTotal(){
+let t=0;
+state.cart.forEach(i=>{
+let sub=i.price*i.qty;
+let disc=sub*i.discount/100;
+t+=sub-disc;
+});
+state.finalTotal=Math.round(t);
 }
 
 function goToPayment(){
-  if(state.cart.length===0){
-    alert("Cart Empty");
-    return;
-  }
-  calculateCartTotal();
-  document.getElementById('pay-item').textContent=
-    state.cart.map(i=>`${i.name} x${i.qty}`).join(", ");
-  document.getElementById('pay-total').textContent=`₹${state.finalTotal}`;
-  goTo('screen-payment');
+if(state.cart.length===0){alert("Cart empty");return;}
+calcTotal();
+document.getElementById('pay-item').innerText=
+state.cart.map(i=>i.name+" x"+i.qty).join(",");
+document.getElementById('pay-total').innerText=state.finalTotal;
+goTo('screen-payment');
 }
 
 function processPayment(){
-  const name=document.getElementById('input-name').value;
-  const card=document.getElementById('input-card').value;
-  const pin=document.getElementById('input-pin').value;
-
-  if(!name || !card || !pin){
-    document.getElementById('pay-error').style.display='block';
-    return;
-  }
-
-  if(card==="12345" && pin==="1234"){
-    goTo('screen-success');
-  } else {
-    goTo('screen-fail');
-  }
+let c=input-card.value;
+let p=input-pin.value;
+if(c==="12345" && p==="1234") goTo('screen-success');
+else goTo('screen-fail');
 }
-
-function resetApp(){
-  state.cart=[];
-  goTo('screen-welcome');
-}
-
 </script>
+
+</body>
+</html>
