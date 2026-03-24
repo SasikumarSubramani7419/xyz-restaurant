@@ -104,7 +104,7 @@
 </head>
 <body>
 <div class="app">
- 
+
   <!-- SCREEN 1: WELCOME -->
   <div class="screen active" id="screen-welcome">
     <div class="card">
@@ -140,7 +140,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- SCREEN 2: CATEGORY -->
   <div class="screen" id="screen-menu">
     <div class="card">
@@ -167,7 +167,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- SCREEN 3: ITEMS -->
   <div class="screen" id="screen-items">
     <div class="card">
@@ -187,7 +187,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- SCREEN 4: QUANTITY -->
   <div class="screen" id="screen-qty">
     <div class="card">
@@ -221,7 +221,7 @@
       <button class="btn btn-ghost" onclick="goTo('screen-items')">← Back</button>
     </div>
   </div>
- 
+
   <!-- SCREEN 5: PAYMENT -->
   <div class="screen" id="screen-payment">
     <div class="card">
@@ -246,7 +246,7 @@
       <button class="btn btn-ghost" onclick="goTo('screen-qty')">← Back</button>
     </div>
   </div>
- 
+
   <!-- SCREEN 6: SUCCESS -->
   <div class="screen" id="screen-success">
     <div class="card">
@@ -270,7 +270,7 @@
       <button class="btn btn-primary" onclick="resetApp()">🍽️ New Order</button>
     </div>
   </div>
- 
+
   <!-- SCREEN 7: FAILURE -->
   <div class="screen" id="screen-fail">
     <div class="card">
@@ -283,7 +283,7 @@
       <button class="btn btn-ghost" onclick="resetApp()">Start Over</button>
     </div>
   </div>
- 
+
 </div>
 <script>
   const MENU = {
@@ -306,7 +306,7 @@
   };
   const TAGS={veg:['all','snacks','main','rice'],nonveg:['all','biryani','curry','rice']};
   const state={category:'',item:'',emoji:'',price:0,qty:1,discount:0,finalTotal:0,name:'',activeTag:'all'};
- 
+
   function goTo(id){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -314,14 +314,14 @@
   }
   function handlePress5(){document.getElementById('invalid-msg').style.display='none';goTo('screen-menu');}
   function showInvalid(){document.getElementById('invalid-msg').style.display='block';}
- 
+
   function selectCategory(cat){
     state.category=cat; state.activeTag='all';
     document.getElementById('items-title').textContent=cat==='veg'?'🥗 Vegetarian Menu':'🍗 Non-Vegetarian Menu';
     document.getElementById('search-input').value='';
     buildFilterTabs(cat); renderItems(MENU[cat]); goTo('screen-items');
   }
- 
+
   function buildFilterTabs(cat){
     const wrap=document.getElementById('filter-tabs');
     wrap.innerHTML='';
@@ -337,7 +337,7 @@
       wrap.appendChild(btn);
     });
   }
- 
+
   function filterItems(){
     const q=document.getElementById('search-input').value.toLowerCase();
     const items=MENU[state.category].filter(item=>{
@@ -347,7 +347,7 @@
     });
     renderItems(items);
   }
- 
+
   function renderItems(items){
     const grid=document.getElementById('items-grid');
     grid.innerHTML='';
@@ -369,7 +369,7 @@
       grid.appendChild(el);
     });
   }
- 
+
   function selectItem(item){
     Object.assign(state,{item:item.name,emoji:item.emoji,price:item.price,discount:item.discount,qty:1});
     document.getElementById('prep-emoji').textContent=item.emoji;
@@ -377,9 +377,9 @@
     document.getElementById('prep-offer-tag').innerHTML=item.discount>0?`<span class="offer-tag">🔥 ${item.discount}% OFF applied!</span>`:'';
     updateQtySummary(); goTo('screen-qty');
   }
- 
+
   function changeQty(delta){state.qty=Math.max(1,state.qty+delta);updateQtySummary();}
- 
+
   function updateQtySummary(){
     const sub=state.price*state.qty;
     const disc=Math.round(sub*state.discount/100);
@@ -396,7 +396,7 @@
       document.getElementById('sum-discount').textContent=`− ₹${disc}`;
     } else dr.style.display='none';
   }
- 
+
   function goToPayment(){
     const disc=Math.round(state.price*state.qty*state.discount/100);
     document.getElementById('pay-item').textContent=`${state.emoji} ${state.item} × ${state.qty}`;
@@ -411,7 +411,7 @@
     ['input-name','input-card','input-pin'].forEach(id=>document.getElementById(id).value='');
     goTo('screen-payment');
   }
- 
+
   function processPayment(){
     const name=document.getElementById('input-name').value.trim();
     const card=document.getElementById('input-card').value.trim();
@@ -432,7 +432,7 @@
       goTo('screen-success');
     } else goTo('screen-fail');
   }
- 
+
   function resetApp(){
     Object.assign(state,{category:'',item:'',emoji:'',price:0,qty:1,discount:0,finalTotal:0,name:'',activeTag:'all'});
     document.getElementById('invalid-msg').style.display='none';
@@ -441,4 +441,3 @@
 </script>
 </body>
 </html>
- 
