@@ -3,56 +3,53 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>XYZ Restaurant | Ultimate Edition</title>
+  <title>XYZ Restaurant | Pro Edition</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    :root{--bg:#0f0e0c;--surface:#1a1814;--card:#221f1a;--border:#2e2a23;--gold:#d4a847;--gold-light:#f0c96a;--red:#c94040;--green:#3a9e6f;--text:#f0ebe0;--muted:#7a7060;--radius:16px;}
+    :root{--bg:#0f0e0c;--surface:rgba(26, 24, 20, 0.95);--card:#221f1a;--border:#2e2a23;--gold:#d4a847;--gold-light:#f0c96a;--red:#c94040;--green:#3a9e6f;--text:#f0ebe0;--muted:#7a7060;--radius:20px;}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;overflow-x:hidden;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow-x:hidden;}
     
-    /* Background Glows */
-    body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(120px);opacity:0.1;pointer-events:none;z-index:0;}
-    body::before{width:600px;height:600px;background:var(--gold);top:-200px;left:-200px;}
-    body::after{width:500px;height:500px;background:#c94040;bottom:-150px;right:-150px;}
+    /* Dynamic Background */
+    body::before{content:'';position:fixed;width:600px;height:600px;background:var(--gold);filter:blur(150px);opacity:0.07;top:-200px;left:-200px;pointer-events:none;}
     
-    .app{position:relative;z-index:1;width:100%;max-width:520px;}
-    .screen{display:none;animation:fadeUp 0.4s cubic-bezier(.22,.68,0,1.2) both;}
+    .app{position:relative;z-index:1;width:100%;max-width:480px;}
+    .screen{display:none;animation:fadeUp 0.5s cubic-bezier(.22,.68,0,1.2) both;}
     .screen.active{display:block;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(24px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
     
-    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:30px;box-shadow:0 32px 80px rgba(0,0,0,.6);position:relative;}
-    .logo-wrap{text-align:center;margin-bottom:20px;}
-    .restaurant-name{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);}
+    .card{background:var(--surface);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--radius);padding:25px;box-shadow:0 25px 50px rgba(0,0,0,0.5);}
     
-    /* Cart Button */
-    .cart-btn-float{position:fixed;bottom:30px;right:30px;background:var(--gold);color:#1a1200;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 8px 25px rgba(212,168,71,0.4);cursor:pointer;z-index:100;transition:0.3s;}
-    .cart-count-badge{position:absolute;top:-5px;right:-5px;background:var(--red);color:white;font-size:0.7rem;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;border:2px solid var(--bg);}
+    /* Header & Navigation */
+    .restaurant-name{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);text-align:center;}
+    .cart-btn-float{position:fixed;bottom:30px;right:30px;background:var(--gold);color:#1a1200;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 10px 30px rgba(212,168,71,0.4);cursor:pointer;z-index:100;}
+    .cart-count-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:white;font-size:0.7rem;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;}
 
-    /* Search & Menu */
-    .search-box{width:100%;background:var(--surface);border:1px solid var(--border);padding:12px;border-radius:10px;color:var(--text);margin-bottom:15px;outline:none;}
-    .menu-grid{display:grid;gap:12px;max-height:400px;overflow-y:auto;padding-right:5px;}
-    .menu-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;}
-    .item-img{width:55px;height:55px;border-radius:8px;object-fit:cover;background:var(--bg);}
+    /* Menu & Lists */
+    .search-box{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--border);padding:14px;border-radius:12px;color:var(--text);margin-bottom:15px;outline:none;}
+    .menu-grid{display:grid;gap:12px;max-height:380px;overflow-y:auto;padding-right:5px;}
+    .menu-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:15px;padding:12px;display:flex;align-items:center;justify-content:space-between;transition:0.3s;}
+    .item-img{width:60px;height:60px;border-radius:12px;object-fit:cover;}
     
-    /* Controls */
-    .add-btn{background:var(--gold);border:none;color:#1a1200;padding:8px 16px;border-radius:8px;font-weight:bold;cursor:pointer;}
-    .qty-controls{display:flex;align-items:center;gap:12px;background:var(--bg);padding:5px 10px;border-radius:8px;border:1px solid var(--border);}
-    .qty-btn{background:none;border:none;color:var(--gold);font-size:1.2rem;cursor:pointer;font-weight:bold;}
-
-    /* Order Tracker */
-    .progress-container{width:100%;background:var(--border);height:8px;border-radius:10px;margin:15px 0;overflow:hidden;}
-    .progress-bar{width:0%;height:100%;background:var(--gold);transition:width 1s linear;}
-    .preparing-status{animation:pulse 2s infinite;color:var(--gold);font-weight:bold;font-size:0.85rem;margin-bottom:5px;}
-    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
-
-    /* Forms & Buttons */
-    .btn{width:100%;padding:15px;border-radius:12px;border:none;font-weight:600;cursor:pointer;margin-top:10px;}
+    /* Buttons */
+    .btn{width:100%;padding:16px;border-radius:14px;border:none;font-weight:600;cursor:pointer;margin-top:10px;transition:0.2s;}
     .btn-primary{background:linear-gradient(135deg,var(--gold),#b8902e);color:#1a1200;}
     .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
-    .summary-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px;margin:15px 0;}
-    .summary-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:0.9rem;}
-    .total-row{border-top:1px solid var(--border);padding-top:10px;margin-top:10px;font-weight:bold;font-size:1.1rem;color:var(--gold-light);}
-    input[type="text"], input[type="password"] { width:100%; padding:12px; background:var(--surface); border:1px solid var(--border); color:white; border-radius:8px; margin-top:5px; margin-bottom:12px;}
+    .add-btn{background:var(--gold);color:#1a1200;padding:8px 16px;border-radius:10px;font-weight:bold;border:none;cursor:pointer;}
+    .qty-controls{display:flex;align-items:center;gap:15px;background:var(--bg);padding:6px 12px;border-radius:10px;border:1px solid var(--border);}
+    
+    /* Progress & Rating */
+    .progress-container{width:100%;background:var(--border);height:6px;border-radius:10px;margin:15px 0;overflow:hidden;}
+    .progress-bar{width:0%;height:100%;background:var(--gold);transition:width 1s linear;}
+    .star-rating{display:flex;justify-content:center;gap:10px;margin:15px 0;}
+    .star{font-size:1.8rem;color:var(--muted);cursor:pointer;transition:0.2s;}
+    .star.selected{color:var(--gold);}
+
+    /* History */
+    .history-tag{font-size:0.7rem;background:var(--border);padding:2px 8px;border-radius:4px;color:var(--gold-light);margin-top:4px;display:inline-block;}
+    
+    input { width:100%; padding:14px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:white; border-radius:10px; margin-bottom:12px;}
+    .summary-box{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:15px;padding:15px;margin:15px 0;}
   </style>
 </head>
 <body>
@@ -66,62 +63,72 @@
   <div class="screen active" id="screen-welcome">
     <div class="card" style="text-align:center;">
       <div class="logo-wrap">
-        <span style="font-size:3rem">🍽️</span>
+        <span style="font-size:3.5rem">✨</span>
         <div class="restaurant-name">XYZ Restaurant</div>
-        <p style="color:var(--muted); letter-spacing:2px; font-size:0.7rem">EST. 2026</p>
+        <p style="color:var(--muted); letter-spacing:3px; font-size:0.7rem; margin-top:5px;">A TASTE OF LUXURY</p>
       </div>
-      <button class="btn btn-primary" onclick="goTo('screen-menu')" style="width:80px; height:80px; border-radius:50%; font-size:1.5rem;">5</button>
-      <p style="margin-top:20px; color:var(--muted)">Press 5 to Begin</p>
+      <button class="btn btn-primary" onclick="goTo('screen-menu')" style="width:70px; height:70px; border-radius:50%; font-size:1.3rem; margin:20px auto; display:block;">5</button>
+      <div id="prev-orders-list" style="margin-top:30px; text-align:left;"></div>
     </div>
   </div>
  
   <div class="screen" id="screen-menu">
     <div class="card">
-      <h3 style="margin-bottom:20px; font-family:'Playfair Display'">Choose Cuisine</h3>
-      <div style="background:var(--surface); padding:20px; border-radius:12px; cursor:pointer; margin-bottom:15px;" onclick="openMenu('veg')">🥗 <b>Vegetarian</b></div>
-      <div style="background:var(--surface); padding:20px; border-radius:12px; cursor:pointer;" onclick="openMenu('nonveg')">🍗 <b>Non-Vegetarian</b></div>
-      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">Back</button>
+      <h3 style="margin-bottom:20px; font-family:'Playfair Display'">Select Your Menu</h3>
+      <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:15px; cursor:pointer; margin-bottom:15px; border:1px solid var(--border);" onclick="openMenu('veg')">🥗 <b>Green Earth (Veg)</b></div>
+      <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:15px; cursor:pointer; border:1px solid var(--border);" onclick="openMenu('nonveg')">🍗 <b>Meat & Grill (Non-Veg)</b></div>
+      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">Back Home</button>
     </div>
   </div>
  
   <div class="screen" id="screen-items">
     <div class="card">
-      <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
         <button onclick="goTo('screen-menu')" style="background:none; border:none; color:var(--gold); cursor:pointer">← Menu</button>
-        <b id="cat-label" style="color:var(--gold)">ITEMS</b>
+        <span id="cat-label" style="font-weight:bold; letter-spacing:1px; color:var(--gold)"></span>
       </div>
-      <input type="text" class="search-box" id="item-search" placeholder="Search dishes..." oninput="filterSearch()">
+      <input type="text" class="search-box" id="item-search" placeholder="What are you craving?" oninput="filterSearch()">
       <div class="menu-grid" id="items-grid"></div>
     </div>
   </div>
  
   <div class="screen" id="screen-cart">
     <div class="card">
-      <h3 style="margin-bottom:15px; font-family:'Playfair Display'">Your Selection</h3>
+      <h3 style="margin-bottom:15px; font-family:'Playfair Display'">Order Summary</h3>
       <div id="cart-list"></div>
       <div class="summary-box" id="cart-summary"></div>
-      <button class="btn btn-primary" onclick="goTo('screen-payment')">Proceed to Checkout</button>
-      <button class="btn btn-ghost" onclick="goTo('screen-items')">Add More</button>
+      <button class="btn btn-primary" onclick="goTo('screen-payment')">Confirm Payment</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-items')">Add More Items</button>
     </div>
   </div>
 
   <div class="screen" id="screen-payment">
     <div class="card">
-      <h3 style="margin-bottom:15px;">Payment</h3>
-      <input type="text" id="p-name" placeholder="Name on Card">
-      <input type="text" id="p-card" placeholder="Card Number (12345)">
-      <input type="password" id="p-pin" placeholder="PIN (1234)">
-      <button class="btn btn-primary" id="pay-btn" onclick="handlePayment()">Pay Now</button>
-      <button class="btn btn-ghost" onclick="goTo('screen-cart')">Back</button>
+      <h3 style="margin-bottom:15px;">Secure Checkout</h3>
+      <input type="text" id="p-name" placeholder="Cardholder Name">
+      <input type="text" id="p-card" placeholder="12345 (Test Card)">
+      <input type="password" id="p-pin" placeholder="1234 (Test PIN)">
+      <button class="btn btn-primary" id="pay-btn" onclick="handlePayment()">Pay Securely</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-cart')">Cancel</button>
     </div>
   </div>
 
   <div class="screen" id="screen-success">
     <div class="card" style="text-align:center;">
-      <span style="font-size:3rem">✅</span>
-      <h2 style="color:var(--green); margin:10px 0;">Order Confirmed!</h2>
-      <div id="receipt-data"></div>
-      <button class="btn btn-primary" onclick="location.reload()">New Order</button>
+      <div id="status-icon" style="font-size:3rem">⏳</div>
+      <h2 id="status-title" style="margin:10px 0;">Preparing...</h2>
+      <div id="order-tracking-ui"></div>
+      <div id="feedback-ui" style="display:none; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+        <p>How was your experience?</p>
+        <div class="star-rating">
+          <span class="star" onclick="rate(1)">★</span>
+          <span class="star" onclick="rate(2)">★</span>
+          <span class="star" onclick="rate(3)">★</span>
+          <span class="star" onclick="rate(4)">★</span>
+          <span class="star" onclick="rate(5)">★</span>
+        </div>
+        <button class="btn btn-primary" onclick="location.reload()">Finish</button>
+      </div>
     </div>
   </div>
 
@@ -130,23 +137,25 @@
 <script>
   const DATA = {
     veg: [
-      { id: 1, name: 'Paneer Tikka', price: 180, img: 'https://images.unsplash.com/photo-1567184109411-47a7a39485ed?w=200' },
-      { id: 2, name: 'Masala Dosa', price: 80, img: 'https://images.unsplash.com/photo-1543353071-087092ec393a?w=200' },
-      { id: 3, name: 'Veg Biryani', price: 150, img: 'https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?w=200' }
+      { id: 1, name: 'Truffle Paneer', price: 280, img: 'https://images.unsplash.com/photo-1567184109411-47a7a39485ed?w=200' },
+      { id: 2, name: 'Avocado Dosa', price: 150, img: 'https://images.unsplash.com/photo-1543353071-087092ec393a?w=200' },
+      { id: 3, name: 'Saffron Pulao', price: 190, img: 'https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?w=200' }
     ],
     nonveg: [
-      { id: 4, name: 'Chicken Biryani', price: 220, img: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200' },
-      { id: 5, name: 'Mutton Curry', price: 350, img: 'https://images.unsplash.com/photo-1545240103-121f29100272?w=200' },
-      { id: 6, name: 'Fish Fry', price: 280, img: 'https://images.unsplash.com/photo-1599043513900-ed6fe01d3833?w=200' }
+      { id: 4, name: 'Royal Biryani', price: 320, img: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200' },
+      { id: 5, name: 'Butter Chicken', price: 350, img: 'https://images.unsplash.com/photo-1545240103-121f29100272?w=200' },
+      { id: 6, name: 'Grilled Salmon', price: 580, img: 'https://images.unsplash.com/photo-1599043513900-ed6fe01d3833?w=200' }
     ]
   };
 
   let cart = JSON.parse(localStorage.getItem('restaurant_cart')) || [];
+  let history = JSON.parse(localStorage.getItem('order_history')) || [];
   let currentCategory = 'veg';
 
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    if(id === 'screen-welcome') renderHistory();
     updateUI();
   }
 
@@ -166,16 +175,19 @@
       if (item.name.toLowerCase().includes(query)) {
         const cartItem = cart.find(c => c.id === item.id);
         const qty = cartItem ? cartItem.qty : 0;
-        const div = document.createElement('div');
-        div.className = 'menu-item';
-        div.innerHTML = `
-          <div style="display:flex; align-items:center; gap:10px;">
-            <img src="${item.img}" class="item-img">
-            <div><b>${item.name}</b><br><small>₹${item.price}</small></div>
+        grid.innerHTML += `
+          <div class="menu-item">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <img src="${item.img}" class="item-img">
+              <div><b>${item.name}</b><br><small>₹${item.price}</small></div>
+            </div>
+            ${qty > 0 ? `<div class="qty-controls">
+              <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+              <span>${qty}</span>
+              <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+            </div>` : `<button class="add-btn" onclick="addToCart(${item.id})">ADD</button>`}
           </div>
-          ${qty > 0 ? `<div class="qty-controls"><button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button><span>${qty}</span><button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button></div>` : `<button class="add-btn" onclick="addToCart(${item.id})">ADD</button>`}
         `;
-        grid.appendChild(div);
       }
     });
   }
@@ -215,10 +227,10 @@
       let sub = 0;
       cart.forEach(item => {
         sub += (item.price * item.qty);
-        list.innerHTML += `<div class="menu-item" style="margin-bottom:10px"><span>${item.name} x ${item.qty}</span><b>₹${item.price * item.qty}</b></div>`;
+        list.innerHTML += `<div class="menu-item" style="margin-bottom:10px; border:none; background:none;"><span>${item.name} x ${item.qty}</span><b>₹${item.price * item.qty}</b></div>`;
       });
       const gst = Math.round(sub * 0.05);
-      summ.innerHTML = `<div class="summary-row"><span>Subtotal</span><span>₹${sub}</span></div><div class="summary-row"><span>GST (5%)</span><span>₹${gst}</span></div><div class="summary-row total-row"><span>Total Payable</span><span>₹${sub + gst}</span></div>`;
+      summ.innerHTML = `<div class="summary-row"><span>Subtotal</span><span>₹${sub}</span></div><div class="summary-row"><span>GST (5%)</span><span>₹${gst}</span></div><div class="summary-row total-row"><span>Payable</span><span>₹${sub + gst}</span></div>`;
     }
   }
 
@@ -227,30 +239,55 @@
     const c = document.getElementById('p-card').value;
     const p = document.getElementById('p-pin').value;
     if (n && c === '12345' && p === '1234') {
-      const btn = document.getElementById('pay-btn');
-      btn.innerHTML = "Authorizing..."; btn.disabled = true;
+      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      history.push({ name: cart[0].name + (cart.length > 1 ? '...' : ''), total: Math.round(total*1.05), date: new Date().toLocaleDateString() });
+      localStorage.setItem('order_history', JSON.stringify(history));
+      
+      document.getElementById('pay-btn').innerHTML = "Authorizing...";
       setTimeout(() => {
-        const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-        document.getElementById('receipt-data').innerHTML = `
+        document.getElementById('order-tracking-ui').innerHTML = `
           <div class="summary-box">
-            <div class="preparing-status">👨‍🍳 Chef is preparing your meal...</div>
             <div class="progress-container"><div class="progress-bar" id="p-bar"></div></div>
-            <p id="t-text">Est: 20:00</p>
-            <h3 style="margin-top:10px">Total: ₹${Math.round(total * 1.05)}</h3>
+            <p id="t-text" style="color:var(--gold)">Cooking: 10:00</p>
           </div>
         `;
-        let time = 1200;
-        const interval = setInterval(() => {
+        let time = 10; // Test mode: 10 seconds. Increase for real use.
+        let bar = document.getElementById('p-bar');
+        let txt = document.getElementById('t-text');
+        
+        const timer = setInterval(() => {
           time--;
-          document.getElementById('p-bar').style.width = ((1200 - time) / 1200 * 100) + "%";
-          document.getElementById('t-text').textContent = `Est: ${Math.floor(time/60)}:${(time%60).toString().padStart(2,'0')}`;
-          if (time <= 0) clearInterval(interval);
+          bar.style.width = ((10 - time) / 10 * 100) + "%";
+          txt.textContent = `Arriving in: ${time}s`;
+          if (time <= 0) {
+            clearInterval(timer);
+            document.getElementById('status-icon').textContent = "🍱";
+            document.getElementById('status-title').textContent = "Food is Ready!";
+            document.getElementById('status-title').style.color = "var(--green)";
+            document.getElementById('feedback-ui').style.display = "block";
+          }
         }, 1000);
         cart = []; localStorage.removeItem('restaurant_cart'); goTo('screen-success');
       }, 1500);
-    } else alert("Invalid Credentials! (Card: 12345, PIN: 1234)");
+    } else alert("Invalid Card Details!");
   }
-  window.onload = updateUI;
+
+  function renderHistory() {
+    const hList = document.getElementById('prev-orders-list');
+    if(history.length === 0) return;
+    hList.innerHTML = '<p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;">PREVIOUS ORDERS</p>';
+    history.slice(-2).reverse().forEach(ord => {
+      hList.innerHTML += `<div class="menu-item" style="margin-bottom:8px; opacity:0.8;"><div><b>${ord.name}</b><br><small>${ord.date}</small></div><b>₹${ord.total}</b></div>`;
+    });
+  }
+
+  function rate(n) {
+    document.querySelectorAll('.star').forEach((s, idx) => {
+      s.classList.toggle('selected', idx < n);
+    });
+  }
+
+  window.onload = () => { renderHistory(); updateUI(); };
 </script>
 </body>
-</html>v
+</html>
