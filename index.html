@@ -3,43 +3,44 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>XYZ Restaurant | Enterprise POS v7</title>
+  <title>XYZ Restaurant | POS Elite</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     :root{--bg:#0f0e0c;--surface:#1a1814;--card:#221f1a;--border:#2e2a23;--gold:#d4a847;--gold-light:#f0c96a;--red:#c94040;--green:#3a9e6f;--text:#f0ebe0;--muted:#7a7060;--radius:16px;}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;justify-content:center;padding:20px;line-height:1.5;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;justify-content:center;padding:20px;}
     
-    .app{position:relative;width:100%;max-width:550px;margin-top:20px;}
+    .app{position:relative;width:100%;max-width:500px;}
     .screen{display:none;animation:fadeUp 0.3s ease-out;}
     .screen.active{display:block;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
     
-    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:25px;box-shadow:0 30px 60px rgba(0,0,0,0.5);width:100%;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:25px;box-shadow:0 30px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;min-height:500px;}
     
-    /* Fix for Collapsing Menus */
-    .scroll-area{max-height:60vh;overflow-y:auto;padding-right:8px;margin:15px 0;}
-    .scroll-area::-webkit-scrollbar{width:5px;}
-    .scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+    /* Category Tabs */
+    .tabs{display:flex;gap:10px;margin-bottom:15px;}
+    .tab{flex:1;padding:10px;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;}
+    .tab.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,71,0.05);}
 
-    /* UI Components */
-    .btn{width:100%;padding:14px;border-radius:12px;border:none;font-weight:600;cursor:pointer;margin-top:10px;transition:0.2s;display:block;text-align:center;}
+    /* Scrollable Menu Area */
+    .menu-scroll{flex-grow:1;overflow-y:auto;margin-bottom:15px;padding-right:5px;}
+    .menu-scroll::-webkit-scrollbar{width:4px;}
+    .menu-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+
+    .menu-item{background:var(--surface);border:1px solid var(--border);padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    
+    /* Cart Footer */
+    .cart-footer{background:var(--surface);padding:15px;border-radius:12px;border:1px solid var(--gold);margin-top:auto;}
+    
+    /* General UI */
+    .btn{width:100%;padding:14px;border-radius:12px;border:none;font-weight:600;cursor:pointer;margin-top:10px;display:block;text-align:center;text-decoration:none;}
     .btn-primary{background:var(--gold);color:#1a1200;}
-    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);margin-top:8px;}
-    .btn-success{background:var(--green);color:white;}
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);}
     
-    .menu-item{background:var(--surface);border:1px solid var(--border);padding:15px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;transition:0.2s;}
-    .menu-item:hover{border-color:var(--gold);}
+    input{width:100%;padding:12px;background:var(--surface);border:1px solid var(--border);color:white;border-radius:10px;margin-bottom:12px;outline:none;}
+    label{font-size:0.75rem;color:var(--muted);text-transform:uppercase;margin-bottom:5px;display:block;}
 
-    /* Table Selection */
-    .table-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin:20px 0;}
-    .table-btn{padding:15px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:center;}
-    .table-btn.selected{border-color:var(--gold);background:rgba(212,168,71,0.1);color:var(--gold);}
-
-    /* Kitchen View */
-    .kds-card{background:var(--surface);border-left:5px solid var(--red);padding:15px;border-radius:10px;margin-bottom:15px;border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
-    .kds-card.preparing{border-left-color:var(--gold);}
-    .kds-header{display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;}
+    .table-badge{background:var(--gold);color:#1a1200;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:bold;}
   </style>
 </head>
 <body>
@@ -47,190 +48,156 @@
 <div class="app">
  
   <div class="screen active" id="screen-home">
-    <div class="card" style="text-align:center;">
-      <h1 style="font-family:'Playfair Display'; color:var(--gold); font-size:2rem; margin-bottom:10px;">XYZ Restaurant</h1>
-      <p style="color:var(--muted); margin-bottom:25px;">Restaurant POS System</p>
-      <button class="btn btn-primary" onclick="goTo('screen-table')">New Order (Waiter)</button>
-      <button class="btn btn-outline" onclick="renderKDS(); goTo('screen-kitchen')">Kitchen Display (Chef)</button>
-      <button class="btn btn-outline" onclick="renderAdmin(); goTo('screen-admin')">Management (Admin)</button>
+    <div class="card" style="text-align:center; justify-content:center;">
+      <h1 style="font-family:'Playfair Display'; color:var(--gold); margin-bottom:10px;">XYZ Restaurant</h1>
+      <button class="btn btn-primary" onclick="goTo('screen-table')">New Order</button>
+      <button class="btn btn-outline" onclick="goTo('screen-admin')">Admin Panel</button>
     </div>
   </div>
 
   <div class="screen" id="screen-table">
     <div class="card">
-      <h2 style="color:var(--gold)">Select Table</h2>
-      <div class="table-grid">
-        <div class="table-btn" onclick="selectTable(this, 1)">T-1</div>
-        <div class="table-btn" onclick="selectTable(this, 2)">T-2</div>
-        <div class="table-btn" onclick="selectTable(this, 3)">T-3</div>
-        <div class="table-btn" onclick="selectTable(this, 4)">T-4</div>
-        <div class="table-btn" onclick="selectTable(this, 5)">T-5</div>
-        <div class="table-btn" onclick="selectTable(this, 6)">T-6</div>
+      <h3 style="margin-bottom:15px;">Assign Table</h3>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:20px;">
+        <button class="tab" onclick="setTable(1)">T-1</button>
+        <button class="tab" onclick="setTable(2)">T-2</button>
+        <button class="tab" onclick="setTable(3)">T-3</button>
       </div>
-      <button class="btn btn-primary" id="btn-start-order" disabled onclick="goTo('screen-menu')">Start Ordering</button>
       <button class="btn btn-outline" onclick="goTo('screen-home')">Back</button>
     </div>
   </div>
 
   <div class="screen" id="screen-menu">
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2 id="order-heading">Menu</h2>
-        <span id="display-table" style="color:var(--gold); font-weight:bold;"></span>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <span class="table-badge" id="active-table">Table 0</span>
+        <button onclick="goTo('screen-table')" style="background:none; border:none; color:var(--gold); cursor:pointer; font-size:0.8rem;">Switch Table</button>
       </div>
-      
-      <div class="scroll-area" id="menu-items-list">
+
+      <div class="tabs">
+        <div class="tab active" id="tab-veg" onclick="toggleMenu('veg')">🥗 Veg</div>
+        <div class="tab" id="tab-nonveg" onclick="toggleMenu('nonveg')">🍗 Non-Veg</div>
+      </div>
+
+      <div class="menu-scroll" id="menu-container">
         </div>
 
-      <div id="cart-summary" style="padding-top:15px; border-top:1px solid var(--border); display:none;">
-        <p>Items: <b id="cart-count">0</b> | Total: <b id="cart-total">₹0</b></p>
-        <button class="btn btn-primary" onclick="submitOrder()">Send to Kitchen</button>
+      <div class="cart-footer" id="cart-summary" style="display:none;">
+        <div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-bottom:8px;">
+          <span>Items: <b id="cart-count">0</b></span>
+          <span>Total: <b id="cart-total">₹0</b></span>
+        </div>
+        <button class="btn btn-primary" onclick="goTo('screen-payment')">Proceed to Payment</button>
       </div>
-      <button class="btn btn-outline" onclick="goTo('screen-table')">Change Table</button>
     </div>
   </div>
 
-  <div class="screen" id="screen-kitchen">
+  <div class="screen" id="screen-payment">
     <div class="card">
-      <h2 style="color:var(--gold); margin-bottom:15px;">Live Kitchen</h2>
-      <div class="scroll-area" id="kds-list"></div>
-      <button class="btn btn-outline" onclick="goTo('screen-home')">Close KDS</button>
-    </div>
-  </div>
-
-  <div class="screen" id="screen-admin">
-    <div class="card">
-      <h2 style="color:var(--gold); margin-bottom:15px;">Admin Dashboard</h2>
-      <div style="background:var(--surface); padding:15px; border-radius:12px; margin-bottom:15px;">
-        <p>Total Revenue: <b id="admin-rev" style="color:var(--green)">₹0</b></p>
-        <p>Total Orders: <b id="admin-count">0</b></p>
+      <h3 style="margin-bottom:20px; font-family:'Playfair Display';">Checkout</h3>
+      <div style="background:var(--surface); padding:15px; border-radius:12px; margin-bottom:20px; border:1px dashed var(--gold);">
+        <p style="font-size:0.8rem; color:var(--muted);">Amount to Pay</p>
+        <h2 id="pay-total" style="color:var(--gold);">₹0</h2>
       </div>
-      <div class="scroll-area" id="admin-history"></div>
-      <button class="btn btn-outline" onclick="goTo('screen-home')">Exit</button>
+      
+      <label>Customer Name</label>
+      <input type="text" id="cust-name" placeholder="Enter name">
+      
+      <label>Payment Method</label>
+      <select style="width:100%; padding:12px; background:var(--surface); color:white; border:1px solid var(--border); border-radius:10px; margin-bottom:15px;">
+        <option>Cash</option>
+        <option>UPI / QR Code</option>
+        <option>Card</option>
+      </select>
+
+      <button class="btn btn-primary" onclick="finishOrder()">Complete Order</button>
+      <button class="btn btn-outline" onclick="goTo('screen-menu')">Back to Menu</button>
     </div>
   </div>
 
 </div>
 
 <script>
-  // Database
-  const MENU = [
-    { id: 1, name: 'Paneer Tikka', price: 250 },
-    { id: 2, name: 'Chicken Biryani', price: 350 },
-    { id: 3, name: 'Veg Fried Rice', price: 180 },
-    { id: 4, name: 'Butter Chicken', price: 320 },
-    { id: 5, name: 'Masala Dosa', price: 90 },
-    { id: 6, name: 'Soft Drink', price: 60 },
-    { id: 7, name: 'Cold Coffee', price: 120 }
-  ];
+  const MENU = {
+    veg: [
+      { id: 1, name: 'Paneer Tikka', price: 250 },
+      { id: 2, name: 'Masala Dosa', price: 90 },
+      { id: 3, name: 'Veg Biryani', price: 180 }
+    ],
+    nonveg: [
+      { id: 4, name: 'Chicken Biryani', price: 280 },
+      { id: 5, name: 'Butter Chicken', price: 320 },
+      { id: 6, name: 'Egg Fried Rice', price: 140 }
+    ]
+  };
 
-  let orders = JSON.parse(localStorage.getItem('pos_orders')) || [];
   let cart = [];
-  let selectedTable = null;
+  let selectedTable = 0;
+  let currentCategory = 'veg';
 
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     if(id === 'screen-menu') renderMenu();
-    if(id === 'screen-kitchen') renderKDS();
+    if(id === 'screen-payment') document.getElementById('pay-total').textContent = '₹' + calculateTotal();
   }
 
-  // Customer/Waiter Logic
-  function selectTable(el, num) {
-    document.querySelectorAll('.table-btn').forEach(b => b.classList.remove('selected'));
-    el.classList.add('selected');
+  function setTable(num) {
     selectedTable = num;
-    document.getElementById('btn-start-order').disabled = false;
-    document.getElementById('display-table').textContent = "Table " + num;
+    document.getElementById('active-table').textContent = 'Table ' + num;
+    goTo('screen-menu');
+  }
+
+  function toggleMenu(cat) {
+    currentCategory = cat;
+    document.getElementById('tab-veg').classList.toggle('active', cat === 'veg');
+    document.getElementById('tab-nonveg').classList.toggle('active', cat === 'nonveg');
+    renderMenu();
   }
 
   function renderMenu() {
-    const list = document.getElementById('menu-items-list');
-    list.innerHTML = '';
-    MENU.forEach(item => {
-      list.innerHTML += `
+    const container = document.getElementById('menu-container');
+    container.innerHTML = '';
+    MENU[currentCategory].forEach(item => {
+      container.innerHTML += `
         <div class="menu-item">
           <div><b>${item.name}</b><br><small>₹${item.price}</small></div>
-          <button class="btn btn-primary" style="width:auto; margin:0; padding:8px 15px;" onclick="addToCart('${item.name}', ${item.price})">Add</button>
+          <button class="btn btn-primary" style="width:auto; margin:0; padding:6px 12px; font-size:0.75rem;" onclick="addToCart('${item.name}', ${item.price})">Add</button>
         </div>`;
     });
   }
 
   function addToCart(name, price) {
     cart.push({ name, price });
-    const total = cart.reduce((s, i) => s + i.price, 0);
-    document.getElementById('cart-summary').style.display = 'block';
-    document.getElementById('cart-count').textContent = cart.length;
-    document.getElementById('cart-total').textContent = '₹' + total;
+    updateCartUI();
   }
 
-  function submitOrder() {
-    const total = cart.reduce((s, i) => s + i.price, 0);
-    orders.push({
-      id: Math.floor(100 + Math.random() * 900),
-      table: selectedTable,
-      items: [...cart],
-      total: total,
-      status: 'Pending',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    });
-    localStorage.setItem('pos_orders', JSON.stringify(orders));
+  function updateCartUI() {
+    const footer = document.getElementById('cart-summary');
+    if(cart.length > 0) {
+      footer.style.display = 'block';
+      document.getElementById('cart-count').textContent = cart.length;
+      document.getElementById('cart-total').textContent = '₹' + calculateTotal();
+    }
+  }
+
+  function calculateTotal() {
+    return cart.reduce((s, i) => s + i.price, 0);
+  }
+
+  function finishOrder() {
+    const name = document.getElementById('cust-name').value;
+    if(!name) { alert("Please enter customer name"); return; }
+    
+    alert(`Order for ${name} at Table ${selectedTable} has been successfully completed!`);
+    
+    // Reset
     cart = [];
-    alert("Sent to Kitchen!");
+    document.getElementById('cust-name').value = '';
+    document.getElementById('cart-summary').style.display = 'none';
     goTo('screen-home');
   }
-
-  // Kitchen Logic
-  function renderKDS() {
-    const list = document.getElementById('kds-list');
-    list.innerHTML = '';
-    const pending = orders.filter(o => o.status !== 'Ready');
-    
-    if(!pending.length) {
-      list.innerHTML = '<p style="text-align:center; color:var(--muted)">No orders to cook.</p>';
-      return;
-    }
-
-    pending.forEach(o => {
-      list.innerHTML += `
-        <div class="kds-card ${o.status === 'Preparing' ? 'preparing' : ''}">
-          <div class="kds-header">
-            <b>Table ${o.table} (#${o.id})</b>
-            <span>${o.time}</span>
-          </div>
-          <div style="margin-bottom:10px;">${o.items.map(i => i.name).join(', ')}</div>
-          <button class="btn ${o.status === 'Pending' ? 'btn-primary' : 'btn-success'}" 
-            onclick="updateStatus(${o.id}, '${o.status === 'Pending' ? 'Preparing' : 'Ready'}')">
-            ${o.status === 'Pending' ? 'Start Cooking' : 'Mark Ready'}
-          </button>
-        </div>`;
-    });
-  }
-
-  function updateStatus(id, stat) {
-    const o = orders.find(o => o.id === id);
-    if(o) o.status = stat;
-    localStorage.setItem('pos_orders', JSON.stringify(orders));
-    renderKDS();
-  }
-
-  // Admin Logic
-  function renderAdmin() {
-    const ready = orders.filter(o => o.status === 'Ready');
-    const rev = ready.reduce((s, o) => s + o.total, 0);
-    document.getElementById('admin-rev').textContent = '₹' + rev;
-    document.getElementById('admin-count').textContent = orders.length;
-    
-    const list = document.getElementById('admin-history');
-    list.innerHTML = '<h4>History</h4>';
-    orders.slice().reverse().forEach(o => {
-      list.innerHTML += `
-        <div class="menu-item" style="font-size:0.8rem">
-          <span>T-${o.table} | ${o.status}</span>
-          <b>₹${o.total}</b>
-        </div>`;
-    });
-  }
 </script>
+
 </body>
 </html>
