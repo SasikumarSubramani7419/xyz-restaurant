@@ -1,169 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XYZ Restaurant</title>
-<style>
-body{font-family:Arial;background:#111;color:#fff;text-align:center}
-.screen{display:none}
-.screen.active{display:block}
-.menu-item{padding:10px;border:1px solid #444;margin:5px;cursor:pointer}
-.btn{padding:10px 20px;margin:10px;cursor:pointer}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XYZ Restaurant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#0f0e0c;--surface:#1a1814;--card:#221f1a;--border:#2e2a23;--gold:#d4a847;--gold-light:#f0c96a;--red:#c94040;--green:#3a9e6f;--text:#f0ebe0;--muted:#7a7060;--radius:16px;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;overflow-x:hidden;}
+    body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(120px);opacity:0.1;pointer-events:none;z-index:0;}
+    body::before{width:600px;height:600px;background:var(--gold);top:-200px;left:-200px;}
+    body::after{width:500px;height:500px;background:#c94040;bottom:-150px;right:-150px;}
+    .app{position:relative;z-index:1;width:100%;max-width:520px;}
+    .screen{display:none;animation:fadeUp 0.4s cubic-bezier(.22,.68,0,1.2) both;}
+    .screen.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;box-shadow:0 32px 80px rgba(0,0,0,.6);}
+    .logo-wrap{text-align:center;margin-bottom:28px;}
+    .logo-icon{font-size:48px;line-height:1;margin-bottom:10px;display:block;}
+    .restaurant-name{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;color:var(--gold);letter-spacing:.5px;}
+    .restaurant-sub{font-size:.75rem;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:5px;}
+    .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+    .offer-banner{background:linear-gradient(135deg,#2a1f0a,#1f1a0f);border:1px solid #3d2f0f;border-radius:12px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;}
+    .offer-icon{font-size:1.5rem;flex-shrink:0;}
+    .offer-text{font-size:.8rem;color:var(--gold-light);line-height:1.5;}
+    .offer-text strong{font-size:.88rem;display:block;margin-bottom:2px;}
+    .press5-wrap{text-align:center;margin:22px 0;}
+    .press5-hint{font-size:.85rem;color:var(--muted);margin-bottom:12px;}
+    .press5-btn{display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b8902e);font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;color:#1a1200;cursor:pointer;border:none;box-shadow:0 8px 32px rgba(212,168,71,.35);transition:transform .15s,box-shadow .15s;}
+    .press5-btn:hover{transform:scale(1.08);box-shadow:0 12px 40px rgba(212,168,71,.5);}
+    .press5-btn:active{transform:scale(.95);}
+    .steps{display:flex;justify-content:center;gap:8px;margin-bottom:24px;}
+    .step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s,transform .3s;}
+    .step-dot.done{background:var(--muted);}
+    .step-dot.active{background:var(--gold);transform:scale(1.4);}
+    .section-title{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--gold);margin-bottom:16px;text-align:center;}
+    .search-wrap{position:relative;margin-bottom:14px;}
+    .search-wrap input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:11px 16px 11px 40px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;}
+    .search-wrap input:focus{border-color:var(--gold);}
+    .search-wrap input::placeholder{color:var(--muted);}
+    .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--muted);pointer-events:none;}
+    .filter-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+    .filter-tab{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;letter-spacing:.5px;transition:all .2s;}
+    .filter-tab:hover{border-color:var(--gold);color:var(--gold);}
+    .filter-tab.active{background:var(--gold);border-color:var(--gold);color:#1a1200;}
+    .menu-grid{display:grid;gap:11px;max-height:360px;overflow-y:auto;padding-right:4px;}
+    .menu-grid::-webkit-scrollbar{width:4px;}
+    .menu-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+    .menu-item{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s,transform .2s,background .2s;user-select:none;}
+    .menu-item:hover{border-color:var(--gold);background:#272319;transform:translateY(-2px);}
+    .item-left{display:flex;align-items:center;gap:12px;}
+    .item-emoji{font-size:1.5rem;}
+    .item-name{font-size:.93rem;font-weight:600;color:var(--text);}
+    .item-desc{font-size:.72rem;color:var(--muted);margin-top:2px;}
+    .item-price{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold-light);font-weight:700;}
+    .offer-tag{display:inline-block;font-size:.63rem;font-weight:700;background:#2a1500;color:#ff9f3f;border:1px solid #5a3000;border-radius:4px;padding:1px 6px;margin-top:3px;letter-spacing:.5px;}
+    .cat-grid{display:grid;gap:14px;}
+    .cat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s,transform .2s,background .2s;}
+    .cat-card:hover{border-color:var(--gold);background:#272319;transform:translateY(-2px);}
+    .cat-left{display:flex;align-items:center;gap:14px;}
+    .cat-emoji{font-size:2rem;}
+    .cat-name{font-size:1rem;font-weight:600;}
+    .cat-count{font-size:.76rem;color:var(--muted);margin-top:2px;}
+    .veg-badge{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;border:1.5px solid;}
+    .veg-badge.veg{color:#3a9e6f;border-color:#3a9e6f;}
+    .veg-badge.nonveg{color:#c94040;border-color:#c94040;}
+    .btn{width:100%;padding:14px 24px;border-radius:12px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:600;transition:transform .15s,box-shadow .15s;letter-spacing:.3px;}
+    .btn:active{transform:scale(.97);}
+    .btn-primary{background:linear-gradient(135deg,var(--gold),#b8902e);color:#1a1200;box-shadow:0 8px 24px rgba(212,168,71,.25);}
+    .btn-primary:hover{box-shadow:0 10px 32px rgba(212,168,71,.4);transform:translateY(-1px);}
+    .btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted);margin-top:10px;}
+    .btn-ghost:hover{border-color:var(--muted);color:var(--text);}
+    .qty-wrap{display:flex;align-items:center;justify-content:center;gap:20px;margin:14px 0;}
+    .qty-btn{width:42px;height:42px;border-radius:50%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s;}
+    .qty-btn:hover{border-color:var(--gold);background:#272319;}
+    .qty-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--gold);min-width:44px;text-align:center;}
+    .summary-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:14px 0;}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;font-size:.87rem;padding:4px 0;color:var(--muted);}
+    .summary-row.total{border-top:1px solid var(--border);margin-top:8px;padding-top:10px;color:var(--text);font-weight:600;font-size:.93rem;}
+    .summary-row.total span:last-child{font-family:'Playfair Display',serif;font-size:1.12rem;color:var(--gold-light);}
+    .discount-row{color:#ff9f3f!important;}
+    .field{margin-bottom:15px;}
+    .field label{display:block;font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;}
+    .field input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.91rem;outline:none;transition:border-color .2s;}
+    .field input:focus{border-color:var(--gold);}
+    .field input::placeholder{color:var(--muted);}
+    .status-badge{text-align:center;padding:22px 16px;}
+    .status-icon{font-size:3rem;margin-bottom:12px;display:block;}
+    .status-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;margin-bottom:8px;}
+    .status-title.success{color:var(--green);}
+    .status-title.fail{color:var(--red);}
+    .status-msg{font-size:.87rem;color:var(--muted);line-height:1.6;}
+    .receipt{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:18px;margin:14px 0;}
+    .receipt-title{font-family:'Playfair Display',serif;font-size:.93rem;color:var(--gold);margin-bottom:12px;text-align:center;}
+    .receipt-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;color:var(--muted);}
+    .receipt-row.big{color:var(--text);font-weight:600;border-top:1px solid var(--border);margin-top:8px;padding-top:10px;}
+    .thankyou{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);text-align:center;margin:14px 0 4px;}
+    .no-results{text-align:center;padding:28px 16px;color:var(--muted);font-size:.88rem;}
+    @media(max-width:480px){.card{padding:22px 16px;}.restaurant-name{font-size:1.55rem;}}
+  </style>
 </head>
 <body>
-
-<!-- SCREEN 1 -->
-<div class="screen active" id="screen-welcome">
-<h1>XYZ Restaurant</h1>
-<button onclick="goTo('screen-menu')" class="btn">Start</button>
+<div class="app">
+ 
+  <!-- SCREEN 1: WELCOME -->
+  <div class="screen active" id="screen-welcome">
+    <div class="card">
+      <div class="logo-wrap">
+        <span class="logo-icon">🍽️</span>
+        <div class="restaurant-name">XYZ Restaurant</div>
+        <div class="restaurant-sub">Fine Dining Experience</div>
+      </div>
+      <div class="offer-banner">
+        <span class="offer-icon">🎉</span>
+        <div class="offer-text">
+          <strong>Today's Special Offers!</strong>
+          🟢 Vada &amp; Chapati — 10% OFF &nbsp;|&nbsp; 🔴 Fish Curry — 15% OFF
+        </div>
+      </div>
+      <div class="offer-banner" style="border-color:#1a2e1a;background:linear-gradient(135deg,#0f1f0f,#121a12);">
+        <span class="offer-icon">🍱</span>
+        <div class="offer-text" style="color:#7fd47f;">
+          <strong style="color:#a0e8a0;">Combo Deal!</strong>
+          Order any Biryani &amp; get 20% OFF on your total bill
+        </div>
+      </div>
+      <div class="divider">Est. 2024</div>
+      <div class="press5-wrap">
+        <div class="press5-hint">Press <strong style="color:var(--gold)">5</strong> to begin your order</div>
+        <button class="press5-btn" onclick="handlePress5()">5</button>
+      </div>
+      <div id="invalid-msg" style="display:none;text-align:center;color:var(--red);font-size:.84rem;margin-top:12px;">
+        ⚠️ Invalid option! Please press 5 to continue.
+      </div>
+      <div style="margin-top:14px;display:flex;justify-content:center;">
+        <button onclick="showInvalid()" class="btn btn-ghost" style="width:auto;padding:9px 18px;font-size:.79rem;">Press wrong key (demo)</button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- SCREEN 2: CATEGORY -->
+  <div class="screen" id="screen-menu">
+    <div class="card">
+      <div class="steps">
+        <div class="step-dot done"></div><div class="step-dot active"></div>
+        <div class="step-dot"></div><div class="step-dot"></div><div class="step-dot"></div>
+      </div>
+      <div class="section-title">Choose Your Menu</div>
+      <div class="cat-grid">
+        <div class="cat-card" onclick="selectCategory('veg')">
+          <div class="cat-left">
+            <span class="cat-emoji">🥗</span>
+            <div><div class="cat-name">Vegetarian</div><div class="cat-count">6 items available</div></div>
+          </div>
+          <span class="veg-badge veg">● Veg</span>
+        </div>
+        <div class="cat-card" onclick="selectCategory('nonveg')">
+          <div class="cat-left">
+            <span class="cat-emoji">🍗</span>
+            <div><div class="cat-name">Non-Vegetarian</div><div class="cat-count">6 items available</div></div>
+          </div>
+          <span class="veg-badge nonveg">● Non-Veg</span>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- SCREEN 3: ITEMS -->
+  <div class="screen" id="screen-items">
+    <div class="card">
+      <div class="steps">
+        <div class="step-dot done"></div><div class="step-dot done"></div>
+        <div class="step-dot active"></div><div class="step-dot"></div><div class="step-dot"></div>
+      </div>
+      <div class="section-title" id="items-title">Select Item</div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search dishes..." oninput="filterItems()"/>
+      </div>
+      <div class="filter-tabs" id="filter-tabs"></div>
+      <div class="menu-grid" id="items-grid"></div>
+      <div style="margin-top:14px;">
+        <button class="btn btn-ghost" onclick="goTo('screen-menu')">← Back</button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- SCREEN 4: QUANTITY -->
+  <div class="screen" id="screen-qty">
+    <div class="card">
+      <div class="steps">
+        <div class="step-dot done"></div><div class="step-dot done"></div>
+        <div class="step-dot done"></div><div class="step-dot active"></div><div class="step-dot"></div>
+      </div>
+      <div class="section-title">Your Order</div>
+      <div class="summary-box" style="text-align:center;padding:18px;">
+        <div style="font-size:.7rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;">Preparing</div>
+        <div style="font-size:1.9rem;margin-bottom:4px;" id="prep-emoji">🍽️</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--gold);" id="prep-name">-</div>
+        <div id="prep-offer-tag" style="margin-top:6px;"></div>
+      </div>
+      <div style="text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:2px;">Select Quantity</div>
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <div class="qty-num" id="qty-display">1</div>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+      <div class="summary-box">
+        <div class="summary-row"><span>Item</span><span id="sum-item">-</span></div>
+        <div class="summary-row"><span>Price per piece</span><span id="sum-price">-</span></div>
+        <div class="summary-row"><span>Quantity</span><span id="sum-qty">-</span></div>
+        <div class="summary-row discount-row" id="sum-discount-row" style="display:none;">
+          <span id="sum-discount-label">Discount</span><span id="sum-discount">-</span>
+        </div>
+        <div class="summary-row total"><span>Total Amount</span><span id="sum-total">-</span></div>
+      </div>
+      <button class="btn btn-primary" onclick="goToPayment()">Proceed to Payment →</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-items')">← Back</button>
+    </div>
+  </div>
+ 
+  <!-- SCREEN 5: PAYMENT -->
+  <div class="screen" id="screen-payment">
+    <div class="card">
+      <div class="steps">
+        <div class="step-dot done"></div><div class="step-dot done"></div>
+        <div class="step-dot done"></div><div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+      </div>
+      <div class="section-title">Payment Details</div>
+      <div class="summary-box" style="margin-bottom:18px;">
+        <div class="summary-row"><span>Order</span><span id="pay-item">-</span></div>
+        <div class="summary-row discount-row" id="pay-discount-row" style="display:none;">
+          <span id="pay-discount-label">Discount</span><span id="pay-discount">-</span>
+        </div>
+        <div class="summary-row total"><span>Amount Due</span><span id="pay-total">-</span></div>
+      </div>
+      <div class="field"><label>Your Name</label><input type="text" id="input-name" placeholder="Enter your name"/></div>
+      <div class="field"><label>Card Number</label><input type="text" id="input-card" placeholder="Enter card number" maxlength="10"/></div>
+      <div class="field"><label>PIN</label><input type="password" id="input-pin" placeholder="Enter PIN" maxlength="6"/></div>
+      <div id="pay-error" style="display:none;color:var(--red);font-size:.82rem;margin-bottom:12px;text-align:center;">⚠️ Please fill all fields.</div>
+      <button class="btn btn-primary" onclick="processPayment()">💳 Pay Now</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-qty')">← Back</button>
+    </div>
+  </div>
+ 
+  <!-- SCREEN 6: SUCCESS -->
+  <div class="screen" id="screen-success">
+    <div class="card">
+      <div class="status-badge">
+        <span class="status-icon">✅</span>
+        <div class="status-title success">Payment Successful!</div>
+        <div class="status-msg">Your order has been placed.<br/>It will be ready shortly!</div>
+      </div>
+      <div class="receipt">
+        <div class="receipt-title">🧾 Order Receipt</div>
+        <div class="receipt-row"><span>Name</span><span id="r-name">-</span></div>
+        <div class="receipt-row"><span>Item</span><span id="r-item">-</span></div>
+        <div class="receipt-row"><span>Quantity</span><span id="r-qty">-</span></div>
+        <div class="receipt-row discount-row" id="r-discount-row" style="display:none;color:#ff9f3f;">
+          <span id="r-discount-label">Discount</span><span id="r-discount">-</span>
+        </div>
+        <div class="receipt-row big"><span>Total Paid</span><span id="r-total">-</span></div>
+      </div>
+      <div class="thankyou">Thank You! 🙏</div>
+      <p style="text-align:center;color:var(--muted);font-size:.79rem;margin-bottom:18px;">Visit us again!</p>
+      <button class="btn btn-primary" onclick="resetApp()">🍽️ New Order</button>
+    </div>
+  </div>
+ 
+  <!-- SCREEN 7: FAILURE -->
+  <div class="screen" id="screen-fail">
+    <div class="card">
+      <div class="status-badge">
+        <span class="status-icon">❌</span>
+        <div class="status-title fail">Payment Failed!</div>
+        <div class="status-msg">Invalid card number or PIN.<br/>Please check your details and try again.</div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:12px;" onclick="goTo('screen-payment')">Try Again →</button>
+      <button class="btn btn-ghost" onclick="resetApp()">Start Over</button>
+    </div>
+  </div>
+ 
 </div>
-
-<!-- SCREEN 2 -->
-<div class="screen" id="screen-menu">
-<h2>Choose Category</h2>
-<button onclick="selectCategory('veg')" class="btn">Veg</button>
-<button onclick="selectCategory('nonveg')" class="btn">Non-Veg</button>
-</div>
-
-<!-- SCREEN 3 -->
-<div class="screen" id="screen-items">
-<h2>Items</h2>
-<div id="items-grid"></div>
-<button onclick="goTo('screen-menu')" class="btn">Back</button>
-</div>
-
-<!-- SCREEN 4 -->
-<div class="screen" id="screen-qty">
-<h2 id="prep-name"></h2>
-<button onclick="changeQty(-1)">-</button>
-<span id="qty-display">1</span>
-<button onclick="changeQty(1)">+</button>
-<br>
-<button onclick="addToCart()" class="btn">Add To Cart</button>
-<button onclick="goTo('screen-items')" class="btn">Back</button>
-</div>
-
-<!-- SCREEN 5 -->
-<div class="screen" id="screen-payment">
-<h2>Payment</h2>
-<p id="pay-item"></p>
-<p>Total: <span id="pay-total"></span></p>
-<input id="input-card" placeholder="card">
-<input id="input-pin" placeholder="pin">
-<br>
-<button onclick="processPayment()" class="btn">Pay</button>
-</div>
-
-<!-- SUCCESS -->
-<div class="screen" id="screen-success">
-<h2>Success</h2>
-<button onclick="resetApp()" class="btn">New Order</button>
-</div>
-
-<!-- FAIL -->
-<div class="screen" id="screen-fail">
-<h2>Failed</h2>
-<button onclick="goTo('screen-payment')" class="btn">Retry</button>
-</div>
-
 <script>
-const MENU={
-veg:[
-{name:'Idli',price:20,discount:0},
-{name:'Vada',price:25,discount:10},
-{name:'Chapati',price:15,discount:10}
-],
-nonveg:[
-{name:'Chicken Biryani',price:120,discount:20},
-{name:'Fish Curry',price:150,discount:15}
-]
-};
-
-const state={
-category:'',
-cart:[],
-currentItem:null,
-qty:1,
-finalTotal:0
-};
-
-function goTo(id){
-document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-}
-
-function selectCategory(cat){
-state.category=cat;
-renderItems(MENU[cat]);
-goTo('screen-items');
-}
-
-function renderItems(items){
-const grid=document.getElementById('items-grid');
-grid.innerHTML='';
-items.forEach(item=>{
-const div=document.createElement('div');
-div.className='menu-item';
-div.innerText=item.name+" ₹"+item.price;
-div.onclick=()=>selectItem(item);
-grid.appendChild(div);
-});
-}
-
-function selectItem(item){
-state.currentItem=item;
-state.qty=1;
-document.getElementById('prep-name').innerText=item.name;
-document.getElementById('qty-display').innerText=1;
-goTo('screen-qty');
-}
-
-function changeQty(d){
-state.qty=Math.max(1,state.qty+d);
-document.getElementById('qty-display').innerText=state.qty;
-}
-
-function addToCart(){
-const item=state.currentItem;
-const exist=state.cart.find(i=>i.name===item.name);
-if(exist) exist.qty+=state.qty;
-else state.cart.push({...item,qty:state.qty});
-goTo('screen-items');
-}
-
-function calculateTotal(){
-let t=0;
-state.cart.forEach(i=>{
-let sub=i.price*i.qty;
-let disc=sub*i.discount/100;
-t+=sub-disc;
-});
-state.finalTotal=Math.round(t);
-}
-
-function goToPayment(){
-if(state.cart.length===0){alert("Cart empty");return;}
-calculateTotal();
-document.getElementById('pay-item').innerText=
-state.cart.map(i=>i.name+" x"+i.qty).join(",");
-document.getElementById('pay-total').innerText="₹"+state.finalTotal;
-goTo('screen-payment');
-}
-
-function processPayment(){
-const c=document.getElementById('input-card').value;
-const p=document.getElementById('input-pin').value;
-if(c==="12345"&&p==="1234") goTo('screen-success');
-else goTo('screen-fail');
-}
-
-function resetApp(){
-state.cart=[];
-goTo('screen-welcome');
-}
+  const MENU = {
+    veg:[
+      {name:'Idli',               emoji:'🫓',price:20, tag:'all',   desc:'Soft steamed rice cakes',           discount:0 },
+      {name:'Dosa',               emoji:'🥞',price:20, tag:'all',   desc:'Crispy rice & lentil crepe',        discount:0 },
+      {name:'Vada',               emoji:'🍩',price:25, tag:'snacks',desc:'Crunchy lentil doughnuts',          discount:10},
+      {name:'Paneer Butter Masala',emoji:'🧀',price:120,tag:'main', desc:'Creamy tomato paneer curry',        discount:0 },
+      {name:'Chapati',            emoji:'🫓',price:15, tag:'main',  desc:'Soft whole wheat flatbread',        discount:10},
+      {name:'Fried Rice',         emoji:'🍚',price:80, tag:'rice',  desc:'Wok-tossed vegetable fried rice',   discount:0 },
+    ],
+    nonveg:[
+      {name:'Chicken Biryani',    emoji:'🍛',price:120,tag:'biryani',desc:'Aromatic basmati with tender chicken',discount:20},
+      {name:'Mutton Biryani',     emoji:'🥘',price:200,tag:'biryani',desc:'Slow-cooked mutton with spiced rice', discount:20},
+      {name:'Fish Curry',         emoji:'🐟',price:150,tag:'curry',  desc:'Spicy coastal-style fish curry',      discount:15},
+      {name:'Egg Fried Rice',     emoji:'🍳',price:90, tag:'rice',   desc:'Golden egg tossed with rice & veggies',discount:0},
+      {name:'Chicken Curry',      emoji:'🍲',price:140,tag:'curry',  desc:'Rich slow-cooked chicken masala',     discount:0 },
+      {name:'Chicken Fried Rice', emoji:'🍗',price:110,tag:'rice',   desc:'Wok-fried rice with juicy chicken',   discount:0 },
+    ],
+  };
+  const TAGS={veg:['all','snacks','main','rice'],nonveg:['all','biryani','curry','rice']};
+  const state={category:'',item:'',emoji:'',price:0,qty:1,discount:0,finalTotal:0,name:'',activeTag:'all'};
+ 
+  function goTo(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function handlePress5(){document.getElementById('invalid-msg').style.display='none';goTo('screen-menu');}
+  function showInvalid(){document.getElementById('invalid-msg').style.display='block';}
+ 
+  function selectCategory(cat){
+    state.category=cat; state.activeTag='all';
+    document.getElementById('items-title').textContent=cat==='veg'?'🥗 Vegetarian Menu':'🍗 Non-Vegetarian Menu';
+    document.getElementById('search-input').value='';
+    buildFilterTabs(cat); renderItems(MENU[cat]); goTo('screen-items');
+  }
+ 
+  function buildFilterTabs(cat){
+    const wrap=document.getElementById('filter-tabs');
+    wrap.innerHTML='';
+    TAGS[cat].forEach(tag=>{
+      const btn=document.createElement('button');
+      btn.className='filter-tab'+(tag==='all'?' active':'');
+      btn.textContent=tag.charAt(0).toUpperCase()+tag.slice(1);
+      btn.onclick=()=>{
+        state.activeTag=tag;
+        document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active'); filterItems();
+      };
+      wrap.appendChild(btn);
+    });
+  }
+ 
+  function filterItems(){
+    const q=document.getElementById('search-input').value.toLowerCase();
+    const items=MENU[state.category].filter(item=>{
+      const matchTag=state.activeTag==='all'||item.tag===state.activeTag;
+      const matchText=item.name.toLowerCase().includes(q)||item.desc.toLowerCase().includes(q);
+      return matchTag&&matchText;
+    });
+    renderItems(items);
+  }
+ 
+  function renderItems(items){
+    const grid=document.getElementById('items-grid');
+    grid.innerHTML='';
+    if(!items.length){grid.innerHTML='<div class="no-results">😕 No dishes found. Try another search!</div>';return;}
+    items.forEach(item=>{
+      const el=document.createElement('div');
+      el.className='menu-item';
+      el.innerHTML=`
+        <div class="item-left">
+          <span class="item-emoji">${item.emoji}</span>
+          <div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.desc}</div>
+            ${item.discount>0?`<span class="offer-tag">🔥 ${item.discount}% OFF</span>`:''}
+          </div>
+        </div>
+        <span class="item-price">₹${item.price}</span>`;
+      el.onclick=()=>selectItem(item);
+      grid.appendChild(el);
+    });
+  }
+ 
+  function selectItem(item){
+    Object.assign(state,{item:item.name,emoji:item.emoji,price:item.price,discount:item.discount,qty:1});
+    document.getElementById('prep-emoji').textContent=item.emoji;
+    document.getElementById('prep-name').textContent=item.name;
+    document.getElementById('prep-offer-tag').innerHTML=item.discount>0?`<span class="offer-tag">🔥 ${item.discount}% OFF applied!</span>`:'';
+    updateQtySummary(); goTo('screen-qty');
+  }
+ 
+  function changeQty(delta){state.qty=Math.max(1,state.qty+delta);updateQtySummary();}
+ 
+  function updateQtySummary(){
+    const sub=state.price*state.qty;
+    const disc=Math.round(sub*state.discount/100);
+    state.finalTotal=sub-disc;
+    document.getElementById('qty-display').textContent=state.qty;
+    document.getElementById('sum-item').textContent=state.item;
+    document.getElementById('sum-price').textContent=`₹${state.price}`;
+    document.getElementById('sum-qty').textContent=state.qty;
+    document.getElementById('sum-total').textContent=`₹${state.finalTotal}`;
+    const dr=document.getElementById('sum-discount-row');
+    if(state.discount>0){
+      dr.style.display='flex';
+      document.getElementById('sum-discount-label').textContent=`Discount (${state.discount}%)`;
+      document.getElementById('sum-discount').textContent=`− ₹${disc}`;
+    } else dr.style.display='none';
+  }
+ 
+  function goToPayment(){
+    const disc=Math.round(state.price*state.qty*state.discount/100);
+    document.getElementById('pay-item').textContent=`${state.emoji} ${state.item} × ${state.qty}`;
+    document.getElementById('pay-total').textContent=`₹${state.finalTotal}`;
+    document.getElementById('pay-error').style.display='none';
+    const pdr=document.getElementById('pay-discount-row');
+    if(state.discount>0){
+      pdr.style.display='flex';
+      document.getElementById('pay-discount-label').textContent=`Discount (${state.discount}%)`;
+      document.getElementById('pay-discount').textContent=`− ₹${disc}`;
+    } else pdr.style.display='none';
+    ['input-name','input-card','input-pin'].forEach(id=>document.getElementById(id).value='');
+    goTo('screen-payment');
+  }
+ 
+  function processPayment(){
+    const name=document.getElementById('input-name').value.trim();
+    const card=document.getElementById('input-card').value.trim();
+    const pin=document.getElementById('input-pin').value.trim();
+    if(!name||!card||!pin){document.getElementById('pay-error').style.display='block';return;}
+    if(card==='12345'&&pin==='1234'){
+      const disc=Math.round(state.price*state.qty*state.discount/100);
+      document.getElementById('r-name').textContent=name;
+      document.getElementById('r-item').textContent=`${state.emoji} ${state.item}`;
+      document.getElementById('r-qty').textContent=state.qty;
+      document.getElementById('r-total').textContent=`₹${state.finalTotal}`;
+      const rdr=document.getElementById('r-discount-row');
+      if(state.discount>0){
+        rdr.style.display='flex';
+        document.getElementById('r-discount-label').textContent=`Discount (${state.discount}%)`;
+        document.getElementById('r-discount').textContent=`− ₹${disc}`;
+      } else rdr.style.display='none';
+      goTo('screen-success');
+    } else goTo('screen-fail');
+  }
+ 
+  function resetApp(){
+    Object.assign(state,{category:'',item:'',emoji:'',price:0,qty:1,discount:0,finalTotal:0,name:'',activeTag:'all'});
+    document.getElementById('invalid-msg').style.display='none';
+    goTo('screen-welcome');
+  }
 </script>
-
 </body>
 </html>
+ 
