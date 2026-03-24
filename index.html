@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>XYZ Restaurant</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 
 <style>
-body{background:#0f0e0c;color:#f0ebe0;font-family:'DM Sans';display:flex;justify-content:center;padding:20px}
+:root{--bg:#0f0e0c;--surface:#1a1814;--card:#221f1a;--border:#2e2a23;--gold:#d4a847;--gold-light:#f0c96a;--red:#c94040;--green:#3a9e6f;--text:#f0ebe0;--muted:#7a7060;--radius:16px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;justify-content:center;padding:24px;}
 .screen{display:none}
 .screen.active{display:block}
-.card{background:#1a1814;padding:25px;border-radius:12px;width:420px}
-.menu-item{background:#221f1a;padding:12px;border-radius:10px;margin-bottom:8px;cursor:pointer}
-.btn{background:#d4a847;color:#000;padding:12px;border:none;border-radius:10px;width:100%;margin-top:10px}
-.qty-btn{padding:10px}
+.card{background:var(--card);border-radius:16px;padding:30px;width:480px}
+.menu-item{background:var(--surface);padding:14px;border-radius:12px;margin-bottom:10px;cursor:pointer}
+.btn{background:linear-gradient(135deg,var(--gold),#b8902e);border:none;padding:14px;border-radius:12px;width:100%;margin-top:10px}
+.qty-btn{width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--border)}
 </style>
 </head>
 
@@ -22,45 +24,40 @@ body{background:#0f0e0c;color:#f0ebe0;font-family:'DM Sans';display:flex;justify
 
 <div class="app">
 
-<!-- welcome -->
 <div class="screen active" id="screen-welcome">
 <div class="card">
 <h1>XYZ Restaurant</h1>
-<button class="btn" onclick="goTo('screen-menu')">Start</button>
+<button class="btn" onclick="goTo('screen-menu')">Start Order</button>
 </div>
 </div>
 
-<!-- category -->
 <div class="screen" id="screen-menu">
 <div class="card">
 <h2>Select Category</h2>
-<button class="btn" onclick="selectCategory('veg')">Veg</button>
-<button class="btn" onclick="selectCategory('nonveg')">Non Veg</button>
+<button class="btn" onclick="selectCategory('veg')">Vegetarian</button>
+<button class="btn" onclick="selectCategory('nonveg')">Non Vegetarian</button>
 </div>
 </div>
 
-<!-- items -->
 <div class="screen" id="screen-items">
 <div class="card">
-<h2>Items</h2>
-<input id="search-input" oninput="filterItems()" placeholder="search">
+<h2>Select Item</h2>
+<input id="search-input" oninput="filterItems()" placeholder="Search"/>
 <div id="items-grid"></div>
-<button class="btn" onclick="goTo('screen-menu')">Back</button>
+<button class="btn" onclick="goToPayment()">Go Payment</button>
 </div>
 </div>
 
-<!-- qty -->
 <div class="screen" id="screen-qty">
 <div class="card">
 <h2 id="prep-name"></h2>
-<button onclick="changeQty(-1)">-</button>
+<button class="qty-btn" onclick="changeQty(-1)">-</button>
 <span id="qty-display">1</span>
-<button onclick="changeQty(1)">+</button>
+<button class="qty-btn" onclick="changeQty(1)">+</button>
 <button class="btn" onclick="addToCart()">Add To Cart</button>
 </div>
 </div>
 
-<!-- payment -->
 <div class="screen" id="screen-payment">
 <div class="card">
 <h2>Payment</h2>
@@ -69,16 +66,16 @@ body{background:#0f0e0c;color:#f0ebe0;font-family:'DM Sans';display:flex;justify
 <input id="input-name" placeholder="name">
 <input id="input-card" placeholder="card">
 <input id="input-pin" placeholder="pin">
-<button class="btn" onclick="processPayment()">Pay</button>
+<button class="btn" onclick="processPayment()">Pay Now</button>
 </div>
 </div>
 
 <div class="screen" id="screen-success">
-<div class="card"><h2>Success</h2></div>
+<div class="card"><h2>Payment Success</h2></div>
 </div>
 
 <div class="screen" id="screen-fail">
-<div class="card"><h2>Failed</h2></div>
+<div class="card"><h2>Payment Failed</h2></div>
 </div>
 
 </div>
@@ -113,16 +110,16 @@ function renderItems(items){
 const grid=document.getElementById('items-grid');
 grid.innerHTML='';
 items.forEach(item=>{
-let d=document.createElement('div');
-d.className='menu-item';
-d.innerText=item.name+" ₹"+item.price;
-d.onclick=()=>selectItem(item);
-grid.appendChild(d);
+const el=document.createElement('div');
+el.className='menu-item';
+el.innerText=item.name+" ₹"+item.price;
+el.onclick=()=>selectItem(item);
+grid.appendChild(el);
 });
 }
 
 function filterItems(){
-let q=document.getElementById('search-input').value.toLowerCase();
+const q=document.getElementById('search-input').value.toLowerCase();
 renderItems(MENU[state.category].filter(i=>i.name.toLowerCase().includes(q)));
 }
 
@@ -140,8 +137,8 @@ document.getElementById('qty-display').innerText=state.qty;
 }
 
 function addToCart(){
-let item=state.currentItem;
-let exist=state.cart.find(i=>i.name===item.name);
+const item=state.currentItem;
+const exist=state.cart.find(i=>i.name===item.name);
 if(exist) exist.qty+=state.qty;
 else state.cart.push({...item,qty:state.qty});
 goTo('screen-items');
@@ -167,9 +164,9 @@ goTo('screen-payment');
 }
 
 function processPayment(){
-let c=input-card.value;
-let p=input-pin.value;
-if(c==="12345" && p==="1234") goTo('screen-success');
+const c=document.getElementById('input-card').value;
+const p=document.getElementById('input-pin').value;
+if(c==="12345"&&p==="1234") goTo('screen-success');
 else goTo('screen-fail');
 }
 </script>
