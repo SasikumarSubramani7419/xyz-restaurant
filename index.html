@@ -3,291 +3,231 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>XYZ Restaurant | Pro Edition</title>
+  <title>XYZ Restaurant | Admin & POS Edition</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    :root{--bg:#0f0e0c;--surface:rgba(26, 24, 20, 0.95);--card:#221f1a;--border:#2e2a23;--gold:#d4a847;--gold-light:#f0c96a;--red:#c94040;--green:#3a9e6f;--text:#f0ebe0;--muted:#7a7060;--radius:20px;}
+    :root{--bg:#0f0e0c;--surface:#1a1814;--card:#221f1a;--border:#2e2a23;--gold:#d4a847;--gold-light:#f0c96a;--red:#c94040;--green:#3a9e6f;--text:#f0ebe0;--muted:#7a7060;--radius:16px;}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow-x:hidden;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
     
-    /* Dynamic Background */
-    body::before{content:'';position:fixed;width:600px;height:600px;background:var(--gold);filter:blur(150px);opacity:0.07;top:-200px;left:-200px;pointer-events:none;}
-    
-    .app{position:relative;z-index:1;width:100%;max-width:480px;}
-    .screen{display:none;animation:fadeUp 0.5s cubic-bezier(.22,.68,0,1.2) both;}
+    .app{position:relative;width:100%;max-width:500px;}
+    .screen{display:none;animation:fadeUp 0.4s ease-out both;}
     .screen.active{display:block;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
     
-    .card{background:var(--surface);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--radius);padding:25px;box-shadow:0 25px 50px rgba(0,0,0,0.5);}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:25px;box-shadow:0 30px 60px rgba(0,0,0,0.5);}
     
-    /* Header & Navigation */
-    .restaurant-name{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold);text-align:center;}
-    .cart-btn-float{position:fixed;bottom:30px;right:30px;background:var(--gold);color:#1a1200;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 10px 30px rgba(212,168,71,0.4);cursor:pointer;z-index:100;}
-    .cart-count-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:white;font-size:0.7rem;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;}
-
-    /* Menu & Lists */
-    .search-box{width:100%;background:rgba(0,0,0,0.2);border:1px solid var(--border);padding:14px;border-radius:12px;color:var(--text);margin-bottom:15px;outline:none;}
-    .menu-grid{display:grid;gap:12px;max-height:380px;overflow-y:auto;padding-right:5px;}
-    .menu-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:15px;padding:12px;display:flex;align-items:center;justify-content:space-between;transition:0.3s;}
-    .item-img{width:60px;height:60px;border-radius:12px;object-fit:cover;}
-    
-    /* Buttons */
-    .btn{width:100%;padding:16px;border-radius:14px;border:none;font-weight:600;cursor:pointer;margin-top:10px;transition:0.2s;}
-    .btn-primary{background:linear-gradient(135deg,var(--gold),#b8902e);color:#1a1200;}
+    /* UI Components */
+    .btn{width:100%;padding:14px;border-radius:12px;border:none;font-weight:600;cursor:pointer;margin-top:10px;transition:0.2s;}
+    .btn-primary{background:var(--gold);color:#1a1200;}
+    .btn-admin{background:#3b3b3b;color:var(--gold-light);border:1px solid var(--gold);}
     .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
-    .add-btn{background:var(--gold);color:#1a1200;padding:8px 16px;border-radius:10px;font-weight:bold;border:none;cursor:pointer;}
-    .qty-controls{display:flex;align-items:center;gap:15px;background:var(--bg);padding:6px 12px;border-radius:10px;border:1px solid var(--border);}
     
-    /* Progress & Rating */
-    .progress-container{width:100%;background:var(--border);height:6px;border-radius:10px;margin:15px 0;overflow:hidden;}
-    .progress-bar{width:0%;height:100%;background:var(--gold);transition:width 1s linear;}
-    .star-rating{display:flex;justify-content:center;gap:10px;margin:15px 0;}
-    .star{font-size:1.8rem;color:var(--muted);cursor:pointer;transition:0.2s;}
-    .star.selected{color:var(--gold);}
-
-    /* History */
-    .history-tag{font-size:0.7rem;background:var(--border);padding:2px 8px;border-radius:4px;color:var(--gold-light);margin-top:4px;display:inline-block;}
+    input{width:100%;padding:12px;background:var(--surface);border:1px solid var(--border);color:white;border-radius:10px;margin-bottom:10px;outline:none;}
     
-    input { width:100%; padding:14px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:white; border-radius:10px; margin-bottom:12px;}
-    .summary-box{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:15px;padding:15px;margin:15px 0;}
+    .menu-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .badge{font-size:0.6rem;padding:2px 6px;border-radius:4px;text-transform:uppercase;font-weight:bold;}
+    
+    /* Admin Specific */
+    .admin-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+    .stat-card{background:var(--surface);padding:15px;border-radius:12px;border:1px solid var(--border);text-align:center;}
+    .order-row{border-bottom:1px solid var(--border);padding:10px 0;font-size:0.85rem;}
+    .stock-toggle{width:auto;margin:0;cursor:pointer;}
   </style>
 </head>
 <body>
-
-<div class="cart-btn-float" id="cart-trigger" onclick="goTo('screen-cart')" style="display:none;">
-  🛒<div class="cart-count-badge" id="cart-count">0</div>
-</div>
 
 <div class="app">
  
   <div class="screen active" id="screen-welcome">
     <div class="card" style="text-align:center;">
-      <div class="logo-wrap">
-        <span style="font-size:3.5rem">✨</span>
-        <div class="restaurant-name">XYZ Restaurant</div>
-        <p style="color:var(--muted); letter-spacing:3px; font-size:0.7rem; margin-top:5px;">A TASTE OF LUXURY</p>
-      </div>
-      <button class="btn btn-primary" onclick="goTo('screen-menu')" style="width:70px; height:70px; border-radius:50%; font-size:1.3rem; margin:20px auto; display:block;">5</button>
-      <div id="prev-orders-list" style="margin-top:30px; text-align:left;"></div>
+      <h1 style="font-family:'Playfair Display'; color:var(--gold); margin-bottom:10px;">XYZ Restaurant</h1>
+      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:30px;">Premium Dining Management</p>
+      <button class="btn btn-primary" onclick="goTo('screen-menu')">Start Customer Order</button>
+      <button class="btn btn-admin" onclick="goTo('screen-login')">Staff Login</button>
     </div>
   </div>
- 
+
+  <div class="screen" id="screen-login">
+    <div class="card">
+      <h3 style="margin-bottom:15px;">Admin Access</h3>
+      <input type="text" id="login-user" placeholder="Username (admin)">
+      <input type="password" id="login-pass" placeholder="Password (9999)">
+      <button class="btn btn-primary" onclick="authAdmin()">Login</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">Back</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-admin">
+    <div class="card">
+      <h2 style="color:var(--gold); margin-bottom:15px;">Dashboard</h2>
+      <div class="admin-stat-grid">
+        <div class="stat-card"><small>Total Revenue</small><div id="admin-revenue" style="font-size:1.2rem; color:var(--green);">₹0</div></div>
+        <div class="stat-card"><small>Orders</small><div id="admin-count" style="font-size:1.2rem;">0</div></div>
+      </div>
+      
+      <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <button class="btn btn-primary" onclick="showAdminTab('orders')" style="margin:0">Live Orders</button>
+        <button class="btn btn-ghost" onclick="showAdminTab('menu')" style="margin:0">Edit Menu</button>
+      </div>
+
+      <div id="admin-content" style="max-height:300px; overflow-y:auto;">
+        </div>
+
+      <button class="btn btn-ghost" onclick="location.reload()">Logout</button>
+    </div>
+  </div>
+
   <div class="screen" id="screen-menu">
     <div class="card">
-      <h3 style="margin-bottom:20px; font-family:'Playfair Display'">Select Your Menu</h3>
-      <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:15px; cursor:pointer; margin-bottom:15px; border:1px solid var(--border);" onclick="openMenu('veg')">🥗 <b>Green Earth (Veg)</b></div>
-      <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:15px; cursor:pointer; border:1px solid var(--border);" onclick="openMenu('nonveg')">🍗 <b>Meat & Grill (Non-Veg)</b></div>
-      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">Back Home</button>
+      <h3 style="margin-bottom:15px;">Choose Category</h3>
+      <div class="menu-item" onclick="openMenu('veg')" style="cursor:pointer;">🥗 <b>Vegetarian</b> <span>➔</span></div>
+      <div class="menu-item" onclick="openMenu('nonveg')" style="cursor:pointer;">🍗 <b>Non-Vegetarian</b> <span>➔</span></div>
+      <button class="btn btn-ghost" onclick="goTo('screen-welcome')">Back</button>
     </div>
   </div>
- 
+
   <div class="screen" id="screen-items">
     <div class="card">
-      <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
-        <button onclick="goTo('screen-menu')" style="background:none; border:none; color:var(--gold); cursor:pointer">← Menu</button>
-        <span id="cat-label" style="font-weight:bold; letter-spacing:1px; color:var(--gold)"></span>
+      <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+        <button onclick="goTo('screen-menu')" style="background:none; border:none; color:var(--gold); cursor:pointer">← Back</button>
+        <b id="cat-title">MENU</b>
       </div>
-      <input type="text" class="search-box" id="item-search" placeholder="What are you craving?" oninput="filterSearch()">
-      <div class="menu-grid" id="items-grid"></div>
+      <div id="items-list"></div>
+      <button class="btn btn-primary" id="go-cart" onclick="goTo('screen-cart')" style="display:none;">View Cart</button>
     </div>
   </div>
- 
+
   <div class="screen" id="screen-cart">
     <div class="card">
-      <h3 style="margin-bottom:15px; font-family:'Playfair Display'">Order Summary</h3>
-      <div id="cart-list"></div>
-      <div class="summary-box" id="cart-summary"></div>
-      <button class="btn btn-primary" onclick="goTo('screen-payment')">Confirm Payment</button>
-      <button class="btn btn-ghost" onclick="goTo('screen-items')">Add More Items</button>
-    </div>
-  </div>
-
-  <div class="screen" id="screen-payment">
-    <div class="card">
-      <h3 style="margin-bottom:15px;">Secure Checkout</h3>
-      <input type="text" id="p-name" placeholder="Cardholder Name">
-      <input type="text" id="p-card" placeholder="12345 (Test Card)">
-      <input type="password" id="p-pin" placeholder="1234 (Test PIN)">
-      <button class="btn btn-primary" id="pay-btn" onclick="handlePayment()">Pay Securely</button>
-      <button class="btn btn-ghost" onclick="goTo('screen-cart')">Cancel</button>
-    </div>
-  </div>
-
-  <div class="screen" id="screen-success">
-    <div class="card" style="text-align:center;">
-      <div id="status-icon" style="font-size:3rem">⏳</div>
-      <h2 id="status-title" style="margin:10px 0;">Preparing...</h2>
-      <div id="order-tracking-ui"></div>
-      <div id="feedback-ui" style="display:none; margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
-        <p>How was your experience?</p>
-        <div class="star-rating">
-          <span class="star" onclick="rate(1)">★</span>
-          <span class="star" onclick="rate(2)">★</span>
-          <span class="star" onclick="rate(3)">★</span>
-          <span class="star" onclick="rate(4)">★</span>
-          <span class="star" onclick="rate(5)">★</span>
-        </div>
-        <button class="btn btn-primary" onclick="location.reload()">Finish</button>
-      </div>
+      <h3>Review Order</h3>
+      <div id="cart-review-list" style="margin:15px 0;"></div>
+      <div id="cart-total" style="font-weight:bold; border-top:1px solid var(--border); padding-top:10px; color:var(--gold);"></div>
+      <button class="btn btn-primary" onclick="processOrder()">Confirm & Pay</button>
+      <button class="btn btn-ghost" onclick="goTo('screen-items')">Add More</button>
     </div>
   </div>
 
 </div>
 
 <script>
-  const DATA = {
+  // --- DATABASE ---
+  let MENU_DATA = JSON.parse(localStorage.getItem('admin_menu')) || {
     veg: [
-      { id: 1, name: 'Truffle Paneer', price: 280, img: 'https://images.unsplash.com/photo-1567184109411-47a7a39485ed?w=200' },
-      { id: 2, name: 'Avocado Dosa', price: 150, img: 'https://images.unsplash.com/photo-1543353071-087092ec393a?w=200' },
-      { id: 3, name: 'Saffron Pulao', price: 190, img: 'https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?w=200' }
+      { id: 1, name: 'Idli', price: 40, inStock: true },
+      { id: 2, name: 'Dosa', price: 80, inStock: true }
     ],
     nonveg: [
-      { id: 4, name: 'Royal Biryani', price: 320, img: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=200' },
-      { id: 5, name: 'Butter Chicken', price: 350, img: 'https://images.unsplash.com/photo-1545240103-121f29100272?w=200' },
-      { id: 6, name: 'Grilled Salmon', price: 580, img: 'https://images.unsplash.com/photo-1599043513900-ed6fe01d3833?w=200' }
+      { id: 3, name: 'Biryani', price: 200, inStock: true },
+      { id: 4, name: 'Chicken 65', price: 150, inStock: true }
     ]
   };
 
-  let cart = JSON.parse(localStorage.getItem('restaurant_cart')) || [];
-  let history = JSON.parse(localStorage.getItem('order_history')) || [];
-  let currentCategory = 'veg';
+  let orders = JSON.parse(localStorage.getItem('all_orders')) || [];
+  let cart = [];
+  let currentCat = '';
 
+  // --- NAVIGATION ---
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    if(id === 'screen-welcome') renderHistory();
-    updateUI();
   }
 
+  // --- ADMIN LOGIC ---
+  function authAdmin() {
+    const user = document.getElementById('login-user').value;
+    const pass = document.getElementById('login-pass').value;
+    if(user === 'admin' && pass === '9999') {
+      goTo('screen-admin');
+      showAdminTab('orders');
+    } else {
+      alert("Invalid Staff Credentials");
+    }
+  }
+
+  function showAdminTab(tab) {
+    const content = document.getElementById('admin-content');
+    const rev = orders.reduce((s, o) => s + o.total, 0);
+    document.getElementById('admin-revenue').textContent = `₹${rev}`;
+    document.getElementById('admin-count').textContent = orders.length;
+
+    if(tab === 'orders') {
+      content.innerHTML = '<h4>Active Orders</h4>';
+      orders.slice().reverse().forEach((o, i) => {
+        content.innerHTML += `
+          <div class="order-row">
+            <b>Order #${o.id}</b> - ₹${o.total}<br>
+            <small>${o.items.map(item => item.name).join(', ')}</small>
+          </div>`;
+      });
+    } else {
+      content.innerHTML = '<h4>Edit Prices / Stock</h4>';
+      [...MENU_DATA.veg, ...MENU_DATA.nonveg].forEach(item => {
+        content.innerHTML += `
+          <div class="menu-item">
+            <span>${item.name}</span>
+            <input type="number" value="${item.price}" style="width:60px; margin:0 5px;" onchange="updatePrice(${item.id}, this.value)">
+            <input type="checkbox" ${item.inStock ? 'checked' : ''} onclick="toggleStock(${item.id})">
+          </div>`;
+      });
+    }
+  }
+
+  function updatePrice(id, newPrice) {
+    [...MENU_DATA.veg, ...MENU_DATA.nonveg].find(i => i.id === id).price = parseInt(newPrice);
+    localStorage.setItem('admin_menu', JSON.stringify(MENU_DATA));
+  }
+
+  function toggleStock(id) {
+    const item = [...MENU_DATA.veg, ...MENU_DATA.nonveg].find(i => i.id === id);
+    item.inStock = !item.inStock;
+    localStorage.setItem('admin_menu', JSON.stringify(MENU_DATA));
+  }
+
+  // --- CUSTOMER LOGIC ---
   function openMenu(cat) {
-    currentCategory = cat;
-    document.getElementById('cat-label').textContent = cat.toUpperCase();
-    filterSearch();
+    currentCat = cat;
+    document.getElementById('cat-title').textContent = cat.toUpperCase();
+    renderItems();
     goTo('screen-items');
   }
 
-  function filterSearch() {
-    const query = document.getElementById('item-search').value.toLowerCase();
-    const grid = document.getElementById('items-grid');
-    grid.innerHTML = '';
-    
-    DATA[currentCategory].forEach(item => {
-      if (item.name.toLowerCase().includes(query)) {
-        const cartItem = cart.find(c => c.id === item.id);
-        const qty = cartItem ? cartItem.qty : 0;
-        grid.innerHTML += `
-          <div class="menu-item">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <img src="${item.img}" class="item-img">
-              <div><b>${item.name}</b><br><small>₹${item.price}</small></div>
-            </div>
-            ${qty > 0 ? `<div class="qty-controls">
-              <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
-              <span>${qty}</span>
-              <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
-            </div>` : `<button class="add-btn" onclick="addToCart(${item.id})">ADD</button>`}
-          </div>
-        `;
-      }
+  function renderItems() {
+    const list = document.getElementById('items-list');
+    list.innerHTML = '';
+    MENU_DATA[currentCat].forEach(item => {
+      list.innerHTML += `
+        <div class="menu-item" style="${!item.inStock ? 'opacity:0.5' : ''}">
+          <div><b>${item.name}</b><br><small>₹${item.price}</small></div>
+          ${item.inStock ? 
+            `<button class="add-btn" onclick="addToCart(${item.id})">ADD</button>` : 
+            `<span style="color:var(--red); font-size:0.7rem;">SOLD OUT</span>`}
+        </div>`;
     });
   }
 
   function addToCart(id) {
-    const item = DATA[currentCategory].find(i => i.id === id);
-    cart.push({ ...item, qty: 1 });
-    save();
-    filterSearch();
+    const item = [...MENU_DATA.veg, ...MENU_DATA.nonveg].find(i => i.id === id);
+    cart.push(item);
+    document.getElementById('go-cart').style.display = 'block';
+    alert(`${item.name} added to cart!`);
   }
 
-  function changeQty(id, delta) {
-    const idx = cart.findIndex(c => c.id === id);
-    if (idx > -1) {
-      cart[idx].qty += delta;
-      if (cart[idx].qty <= 0) cart.splice(idx, 1);
-    }
-    save();
-    if (document.getElementById('screen-items').classList.contains('active')) filterSearch();
-    else updateUI();
+  function processOrder() {
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    const newOrder = {
+      id: Math.floor(1000 + Math.random() * 9000),
+      items: cart,
+      total: total,
+      time: new Date().toLocaleTimeString()
+    };
+    orders.push(newOrder);
+    localStorage.setItem('all_orders', JSON.stringify(orders));
+    alert(`Order #${newOrder.id} Placed Successfully!`);
+    cart = [];
+    goTo('screen-welcome');
   }
-
-  function save() {
-    localStorage.setItem('restaurant_cart', JSON.stringify(cart));
-    updateUI();
-  }
-
-  function updateUI() {
-    const count = cart.reduce((s, i) => s + i.qty, 0);
-    document.getElementById('cart-trigger').style.display = count > 0 ? 'flex' : 'none';
-    document.getElementById('cart-count').textContent = count;
-
-    if (document.getElementById('screen-cart').classList.contains('active')) {
-      const list = document.getElementById('cart-list');
-      const summ = document.getElementById('cart-summary');
-      list.innerHTML = cart.length ? '' : '<p style="text-align:center; color:var(--muted)">Cart is empty</p>';
-      let sub = 0;
-      cart.forEach(item => {
-        sub += (item.price * item.qty);
-        list.innerHTML += `<div class="menu-item" style="margin-bottom:10px; border:none; background:none;"><span>${item.name} x ${item.qty}</span><b>₹${item.price * item.qty}</b></div>`;
-      });
-      const gst = Math.round(sub * 0.05);
-      summ.innerHTML = `<div class="summary-row"><span>Subtotal</span><span>₹${sub}</span></div><div class="summary-row"><span>GST (5%)</span><span>₹${gst}</span></div><div class="summary-row total-row"><span>Payable</span><span>₹${sub + gst}</span></div>`;
-    }
-  }
-
-  function handlePayment() {
-    const n = document.getElementById('p-name').value;
-    const c = document.getElementById('p-card').value;
-    const p = document.getElementById('p-pin').value;
-    if (n && c === '12345' && p === '1234') {
-      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-      history.push({ name: cart[0].name + (cart.length > 1 ? '...' : ''), total: Math.round(total*1.05), date: new Date().toLocaleDateString() });
-      localStorage.setItem('order_history', JSON.stringify(history));
-      
-      document.getElementById('pay-btn').innerHTML = "Authorizing...";
-      setTimeout(() => {
-        document.getElementById('order-tracking-ui').innerHTML = `
-          <div class="summary-box">
-            <div class="progress-container"><div class="progress-bar" id="p-bar"></div></div>
-            <p id="t-text" style="color:var(--gold)">Cooking: 10:00</p>
-          </div>
-        `;
-        let time = 10; // Test mode: 10 seconds. Increase for real use.
-        let bar = document.getElementById('p-bar');
-        let txt = document.getElementById('t-text');
-        
-        const timer = setInterval(() => {
-          time--;
-          bar.style.width = ((10 - time) / 10 * 100) + "%";
-          txt.textContent = `Arriving in: ${time}s`;
-          if (time <= 0) {
-            clearInterval(timer);
-            document.getElementById('status-icon').textContent = "🍱";
-            document.getElementById('status-title').textContent = "Food is Ready!";
-            document.getElementById('status-title').style.color = "var(--green)";
-            document.getElementById('feedback-ui').style.display = "block";
-          }
-        }, 1000);
-        cart = []; localStorage.removeItem('restaurant_cart'); goTo('screen-success');
-      }, 1500);
-    } else alert("Invalid Card Details!");
-  }
-
-  function renderHistory() {
-    const hList = document.getElementById('prev-orders-list');
-    if(history.length === 0) return;
-    hList.innerHTML = '<p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;">PREVIOUS ORDERS</p>';
-    history.slice(-2).reverse().forEach(ord => {
-      hList.innerHTML += `<div class="menu-item" style="margin-bottom:8px; opacity:0.8;"><div><b>${ord.name}</b><br><small>${ord.date}</small></div><b>₹${ord.total}</b></div>`;
-    });
-  }
-
-  function rate(n) {
-    document.querySelectorAll('.star').forEach((s, idx) => {
-      s.classList.toggle('selected', idx < n);
-    });
-  }
-
-  window.onload = () => { renderHistory(); updateUI(); };
 </script>
+
 </body>
 </html>
